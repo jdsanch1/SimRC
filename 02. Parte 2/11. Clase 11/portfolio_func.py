@@ -1,12 +1,17 @@
 
-def get_historical_closes(ticker, start_date, end_date):
-    import pandas_datareader.data as web
-    p = web.DataReader(ticker, "yahoo", start_date, end_date).sort_index('major_axis')
-    d = p.to_frame()['Adj Close'].reset_index()
-    d.rename(columns={'minor': 'Ticker', 'Adj Close': 'Close'}, inplace=True)
-    pivoted = d.pivot(index='Date', columns='Ticker')
-    pivoted.columns = pivoted.columns.droplevel(0)
-    return pivoted
+def get_historical_closes(tickers, start_date, end_date):
+    """Descarga precios de cierre ajustados usando yfinance."""
+    import yfinance as yf
+    import pandas as pd
+    data = yf.download(tickers, start=start_date, end=end_date,
+                       auto_adjust=True, progress=False)
+    if isinstance(data.columns, pd.MultiIndex):
+        closes = data["Close"]
+    else:
+        closes = data[["Close"]]
+        closes.columns = [tickers] if isinstance(tickers, str) else list(tickers)
+    closes.index.name = "Date"
+    return closes.dropna()
 
 def sim_mont_portfolio(daily_returns,num_portfolios,risk_free):
     num_assets=len(daily_returns.T)
@@ -22,7 +27,7 @@ def sim_mont_portfolio(daily_returns,num_portfolios,risk_free):
     covariance= skcov.ShrunkCovariance().fit(daily_returns).covariance_
     #Simulated weights
     weights = np.array(np.random.random(num_assets*num_portfolios)).reshape(num_portfolios,num_assets)
-    weights = weights*np.matlib.repmat(1/weights.sum(axis=1),num_assets,1).T
+    weights = weights / weights.sum(axis=1, keepdims=True)
     ret=252*weights.dot(returns_av).T
     sd = np.zeros(num_portfolios)
     for i in range(num_portfolios):
