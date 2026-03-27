@@ -31,80 +31,119 @@ def sim_mont_portfolio(daily_returns,num_portfolios,risk_free):
     ret=252*weights.dot(returns_av).T
     sd = np.zeros(num_portfolios)
     for i in range(num_portfolios):
-        sd[i]=np.sqrt(252*(((weights[i,:]).dot(covariance)).dot(weights[i,:].T))) 
-    sharpe=np.divide((ret-risk_free),sd)    
+        sd[i]=np.sqrt(252*(((weights[i,:]).dot(covariance)).dot(weights[i,:].T)))
+    sharpe=np.divide((ret-risk_free),sd)
     return pd.DataFrame(data=np.column_stack((ret,sd,sharpe,weights)),columns=(['Returns','SD','Sharpe']+list(daily_returns.columns)))
 
 def calc_daily_returns(closes):
     import numpy as np
     return np.log(closes/closes.shift(1))[1:]
 
-def optimal_portfolio(daily_returns,N,r):
-    # Frontier points
-    #Packages
+def optimal_portfolio(daily_returns, N, r):
+    """Frontera eficiente mediante programación cuadrática con CVXPY (DCP).
+
+    Resuelve N problemas paramétricos:
+        minimizar   μ · w'Σw − μ̄'w
+        sujeto a    Σ wᵢ = 1,  wᵢ ≥ 0
+
+    donde μ recorre una malla logarítmica de aversión al riesgo.
+    """
     import pandas as pd
     import sklearn.covariance as skcov
     import numpy as np
-    import cvxopt as opt
-    from cvxopt import blas, solvers
+    import cvxpy as cp
     import statsmodels.api as sm
+
     huber = sm.robust.scale.Huber()
     n = len(daily_returns.T)
-    returns = np.asmatrix(daily_returns)
-    mus = [(10**(5.0 * t/N- 1.0)-10**(-1)) for t in range(N)]   
-    #cvxopt matrices
-    S = opt.matrix(skcov.ShrunkCovariance().fit(returns).covariance_)
-    returns_av, scale = huber(returns)
-    pbar = opt.matrix(returns_av)    
-    # Constraint matrices
-    G = -opt.matrix(np.eye(n))   # negative n x n identity matrix
-    h = opt.matrix(0.0, (n ,1))
-    A = opt.matrix(1.0, (1, n))
-    b = opt.matrix(1.0)    
-    # Calculate efficient frontier weights using quadratic programming
-    portfolios = [solvers.qp(mu*S, -pbar, G, h, A, b)['x'] for mu in mus]
-    # Risk and returns
-    returns = [252*blas.dot(pbar, x) for x in portfolios]
-    risks = [np.sqrt(252*blas.dot(x, S*x)) for x in portfolios]
-    portfolios=[np.eye(n).dot(portfolios[i])[:,0] for i in range(N)]
-    returns = np.asarray(returns)
-    risks = np.asarray(risks)
-    sharpe=np.divide((returns-r),risks) 
-    portfolios = np.asarray(portfolios)
-    return  pd.DataFrame(data=np.column_stack((returns,risks,sharpe,portfolios)),columns=(['Returns','SD','Sharpe']+list(daily_returns.columns)))
+    returns_mat = np.asmatrix(daily_returns)
 
-def optimal_portfolio_b(daily_returns,N,r,c0):
-    # Frontier points
-    #Packages
+    # Estimadores robustos
+    Sigma = skcov.ShrunkCovariance().fit(returns_mat).covariance_
+    returns_av, _ = huber(returns_mat)
+    mu_vec = np.asarray(returns_av).flatten()
+
+    # Malla de aversión al riesgo (misma que la versión original)
+    mus = [(10**(5.0 * t/N - 1.0) - 10**(-1)) for t in range(N)]
+
+    # Problema DCP paramétrico
+    w = cp.Variable(n)
+    mu_param = cp.Parameter(nonneg=True)
+    risk = cp.quad_form(w, Sigma)       # convexa (Sigma PSD)
+    ret_expr = mu_vec @ w               # afín
+    objective = cp.Minimize(mu_param * risk - ret_expr)
+    constraints = [cp.sum(w) == 1, w >= 0]
+    prob = cp.Problem(objective, constraints)
+
+    portfolios = []
+    for mu in mus:
+        mu_param.value = mu
+        prob.solve(solver=cp.ECOS, warm_start=True)
+        portfolios.append(w.value.copy())
+
+    portfolios = np.array(portfolios)
+    port_returns = 252 * portfolios @ mu_vec
+    port_risks = np.array([np.sqrt(252 * p @ Sigma @ p) for p in portfolios])
+    sharpe = (port_returns - r) / port_risks
+
+    return pd.DataFrame(
+        data=np.column_stack((port_returns, port_risks, sharpe, portfolios)),
+        columns=['Returns', 'SD', 'Sharpe'] + list(daily_returns.columns)
+    )
+
+def optimal_portfolio_b(daily_returns, N, r, c0):
+    """Frontera eficiente con bono (activo libre de riesgo) usando CVXPY (DCP).
+
+    Extiende la matriz de covarianza con una fila/columna de ceros para el bono
+    y resuelve el mismo QP paramétrico.
+    """
     import pandas as pd
     import sklearn.covariance as skcov
     import numpy as np
-    import cvxopt as opt
-    from cvxopt import blas, solvers
+    import cvxpy as cp
     import statsmodels.api as sm
-    cm = np.insert((np.insert(skcov.ShrunkCovariance().fit(daily_returns).covariance_,len(daily_returns.T),0,axis=0)),len(daily_returns.T),0,axis=1)
+
     huber = sm.robust.scale.Huber()
-    mus = [(10**(5.0 * t/N- 1.0)-10**(-1)) for t in range(N)]
-    n = len(daily_returns.T)+1
-    #cvxopt matrices
-    S = opt.matrix(cm)
-    returns_av, scale = huber(daily_returns)
-    pbar = opt.matrix(np.r_[returns_av,c0]) 
-    daily_returns['BOND']=c0*np.ones(daily_returns.index.size)
-    returns = np.asmatrix(daily_returns)
-    # Constraint matrices
-    G = -opt.matrix(np.eye(n))   # negative n x n identity matrix
-    h = opt.matrix(0.0, (n ,1))
-    A = opt.matrix(1.0, (1, n))
-    b = opt.matrix(1.0)    
-    # Calculate efficient frontier weights using quadratic programming
-    portfolios = [solvers.qp(mu*S, -pbar, G, h, A, b)['x'] for mu in mus]
-    # Risk and returns
-    returns = [252*blas.dot(pbar, x) for x in portfolios]
-    risks = [np.sqrt(252*blas.dot(x, S*x)) for x in portfolios]
-    portfolios=[np.eye(n).dot(portfolios[i])[:,0] for i in range(N)]
-    returns = np.asarray(returns)
-    risks = np.asarray(risks)
-    sharpe=np.divide((returns-r),risks) 
-    portfolios = np.asarray(portfolios)
-    return  pd.DataFrame(data=np.column_stack((returns,risks,sharpe,portfolios)),columns=(['Returns','SD','Sharpe']+list(daily_returns.columns)))
+
+    # Extender covarianza con bono (varianza = 0)
+    Sigma_stocks = skcov.ShrunkCovariance().fit(daily_returns).covariance_
+    n_stocks = len(daily_returns.T)
+    n = n_stocks + 1
+    Sigma = np.zeros((n, n))
+    Sigma[:n_stocks, :n_stocks] = Sigma_stocks
+
+    # Rendimientos esperados incluyendo bono
+    returns_av, _ = huber(daily_returns)
+    mu_vec = np.append(np.asarray(returns_av).flatten(), c0)
+
+    # Añadir columna BOND al DataFrame
+    daily_returns = daily_returns.copy()
+    daily_returns['BOND'] = c0 * np.ones(daily_returns.index.size)
+
+    # Malla de aversión al riesgo
+    mus = [(10**(5.0 * t/N - 1.0) - 10**(-1)) for t in range(N)]
+
+    # Problema DCP paramétrico
+    w = cp.Variable(n)
+    mu_param = cp.Parameter(nonneg=True)
+    risk = cp.quad_form(w, Sigma)
+    ret_expr = mu_vec @ w
+    objective = cp.Minimize(mu_param * risk - ret_expr)
+    constraints = [cp.sum(w) == 1, w >= 0]
+    prob = cp.Problem(objective, constraints)
+
+    portfolios = []
+    for mu in mus:
+        mu_param.value = mu
+        prob.solve(solver=cp.ECOS, warm_start=True)
+        portfolios.append(w.value.copy())
+
+    portfolios = np.array(portfolios)
+    port_returns = 252 * portfolios @ mu_vec
+    port_risks = np.array([np.sqrt(252 * p @ Sigma @ p) for p in portfolios])
+    sharpe = (port_returns - r) / port_risks
+
+    return pd.DataFrame(
+        data=np.column_stack((port_returns, port_risks, sharpe, portfolios)),
+        columns=['Returns', 'SD', 'Sharpe'] + list(daily_returns.columns)
+    )
