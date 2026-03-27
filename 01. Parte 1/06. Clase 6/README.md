@@ -220,5 +220,13 @@ Generación de números aleatorios
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 5: Covarianza robusta  
+→ **Siguiente**: Clase 7: Comparación de estimadores y riesgo
+
+---
+
 *Archivo de apoyo para la Clase 6 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

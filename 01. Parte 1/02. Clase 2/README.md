@@ -259,5 +259,13 @@ Precios de cierre (yfinance)
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 1: Análisis de acciones  
+→ **Siguiente**: Clase 3: Opciones financieras
+
+---
+
 *Archivo de apoyo para la Clase 2 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

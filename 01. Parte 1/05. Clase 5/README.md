@@ -218,5 +218,13 @@ Covarianza muestral (Clase 2-4)
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 4: Ratio de Sharpe  
+→ **Siguiente**: Clase 6: Media robusta (Huber)
+
+---
+
 *Archivo de apoyo para la Clase 5 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

@@ -363,5 +363,12 @@ Datos de mercado (yfinance)
 
 ---
 
+
+## Navegación del curso
+
+→ **Siguiente**: Clase 2: Retornos logarítmicos y matriz de covarianza
+
+---
+
 *Archivo de apoyo para la Clase 1 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

@@ -218,5 +218,13 @@ Selección de portafolios
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 3: Opciones financieras  
+→ **Siguiente**: Clase 5: Covarianza robusta (Shrunk Covariance)
+
+---
+
 *Archivo de apoyo para la Clase 4 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

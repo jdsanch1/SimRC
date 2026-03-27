@@ -323,5 +323,13 @@ Opciones financieras
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 2: Retornos y covarianza  
+→ **Siguiente**: Clase 4: Ratio de Sharpe y portafolio óptimo
+
+---
+
 *Archivo de apoyo para la Clase 3 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*

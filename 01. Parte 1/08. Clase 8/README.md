@@ -166,6 +166,14 @@ Datos (yfinance)
 
 ## Recursos adicionales
 
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [numpy.random](https://numpy.org/doc/stable/reference/random/) | Generadores de números aleatorios de NumPy |
+| [sklearn.neighbors.KernelDensity](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KernelDensity.html) | KDE en scikit-learn |
+| [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) | Distribuciones y tests estadísticos |
+
 ### Conexión con la Parte 2
 
 | Clase | Tema | Relación con Parte 1 |
@@ -202,6 +210,14 @@ Valuación de opciones por Monte Carlo
           ├── Datos → Rendimientos → Estimadores robustos
           └── → Simulación MC → Valuación / Riesgo
 ```
+
+---
+
+
+## Navegación del curso
+
+← **Anterior**: Clase 7: Comparación de estimadores  
+→ **Siguiente**: Parte 2: Optimización y Productos Derivados
 
 ---
 

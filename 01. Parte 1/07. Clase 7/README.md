@@ -180,5 +180,13 @@ Datos históricos (rendimientos)
 
 ---
 
+
+## Navegación del curso
+
+← **Anterior**: Clase 6: Media robusta y RNG  
+→ **Siguiente**: Clase 8: Resumen Parte 1
+
+---
+
 *Archivo de apoyo para la Clase 7 del curso **Simulación de Riesgos y Coberturas** (SimRC).*
 *Profesor: Juan Diego Sánchez Torres — MAF ITESO.*
