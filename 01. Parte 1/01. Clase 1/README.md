@@ -276,6 +276,8 @@ donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vect
 - **Tsay, R. S.** (2010). *Analysis of Financial Time Series* (3rd ed.). Wiley.
   - Cap. 1: Financial Time Series and Their Characteristics.
   - Cap. 3: Conditional Heteroscedastic Models (ARCH/GARCH).
+- **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos: productos derivados y decisiones económicas bajo incertidumbre* (2a ed.). Cengage Learning.
+  - Cubre movimiento browniano, lema de Itô, valoración de derivados y gestión de riesgos desde una perspectiva latinoamericana.
 - **McNeil, A. J., Frey, R. & Embrechts, P.** (2015). *Quantitative Risk Management: Concepts, Techniques and Tools* (2nd ed.). Princeton University Press.
   - Cap. 3: Empirical Properties of Financial Data.
 
