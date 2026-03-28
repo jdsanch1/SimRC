@@ -130,9 +130,30 @@ Esto se visualiza calculando el precio MC para cada horizonte intermedio t = 1, 
 | 7 | Simulación de riesgo | Monte Carlo, VaR, CVaR |
 | **8** | **Valuación MC** | **Normal, histograma, KDE** |
 
+### El tradeoff rendimiento-riesgo como optimización bi-objetivo
+
+**Definición (Pareto óptimo, Boyd §4.7.5).** Un portafolio $\mathbf{w}^*$ es **Pareto óptimo** si no existe otro portafolio factible $\mathbf{w}$ que mejore un objetivo (rendimiento o riesgo) sin empeorar el otro. La frontera eficiente de Markowitz es exactamente la **frontera de Pareto** del problema bi-criterio:
+
+$$
+\text{minimizar} \quad (\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}, \; -\boldsymbol{\mu}^\top\mathbf{w})
+$$
+
+**Teorema (Escalarización, Boyd §4.7.5).** Todo punto de la frontera de Pareto se obtiene resolviendo el problema escalarizado $\min_{\mathbf{w}} \; \mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w} - \gamma\,\boldsymbol{\mu}^\top\mathbf{w}$ para algún $\gamma \geq 0$. El parámetro $\gamma$ controla el tradeoff: $\gamma = 0$ da el portafolio de mínima varianza; $\gamma \to \infty$ maximiza rendimiento sin importar riesgo.
+
 ### Flujo completo de la Parte 1
 
-El flujo integra conceptos de optimización convexa (Boyd & Vandenberghe, 2004) en cada etapa: formas cuadráticas convexas para la varianza del portafolio (§3.1.5), QP para la frontera eficiente (§4.4), regularización para estimadores robustos (§6.3), penalización de Huber (§6.1.2) y SOCP para CVaR (§4.3.2).
+El flujo integra conceptos de optimización convexa (Boyd & Vandenberghe, 2004) en cada etapa:
+
+| Clase | Concepto Boyd | Sección |
+|:---:|---|---|
+| 1 | Conjuntos convexos (simplex), normas | §2.1, §A.1 |
+| 2 | Matrices PSD, convexidad de $\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}$ | §A.4, §3.1.5 |
+| 3 | Composición de convexas, payoff convexo | §3.2.3–3.2.4 |
+| 4 | QP, DCP, cuasi-convexidad, parametric opt. | §4.4, §3.4, §5.6 |
+| 5 | Regularización = shrinkage, ML de covarianza | §6.3, §7.1 |
+| 6 | Penalización de Huber (convexa) | §6.1.2 |
+| 7 | CVaR como LP convexo, Chebyshev | §4.3.2, §6.2 |
+| 8 | Pareto óptimo, escalarización bi-objetivo | §4.7.5 |
 
 ```
 Datos (yfinance)

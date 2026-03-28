@@ -63,7 +63,31 @@ $$
 \text{CVaR}_\alpha = -\mathbb{E}[\text{PnL} \mid \text{PnL} \leq -\text{VaR}_\alpha]
 $$
 
-Minimizar el CVaR de un portafolio se puede formular como un problema de programación cónica de segundo orden (SOCP), lo que lo hace tratable mediante optimización convexa (Boyd & Vandenberghe, 2004, §4.3.2; Rockafellar & Uryasev, 2000).
+**Teorema (Rockafellar & Uryasev, 2000; Boyd §4.3.2).** El CVaR al nivel $\alpha$ puede formularse como la solución de un problema de **optimización convexa**. Para un portafolio con pesos $\mathbf{w}$ y $S$ escenarios de rendimiento $\{\mathbf{r}^{(s)}\}_{s=1}^S$:
+
+$$
+\text{CVaR}_\alpha(\mathbf{w}) = \min_{\beta \in \mathbb{R}} \left\{ \beta + \frac{1}{S(1-\alpha)} \sum_{s=1}^{S} \max\!\left(-\mathbf{w}^\top\mathbf{r}^{(s)} - \beta, \; 0\right) \right\}
+$$
+
+*Derivación completa.* Se introducen variables auxiliares $u_s \geq 0$ para linearizar el $\max$. El problema de minimización del CVaR del portafolio se convierte en un **programa lineal** (LP):
+
+$$
+\min_{\mathbf{w}, \beta, \mathbf{u}} \quad \beta + \frac{1}{S(1-\alpha)} \sum_{s=1}^{S} u_s
+$$
+
+sujeto a:
+
+$$
+u_s \geq -\mathbf{w}^\top\mathbf{r}^{(s)} - \beta, \quad u_s \geq 0, \quad s = 1, \ldots, S
+$$
+
+$$
+\mathbf{1}^\top\mathbf{w} = 1, \qquad \mathbf{w} \geq 0
+$$
+
+Las variables de decisión son: $\mathbf{w} \in \mathbb{R}^n$ (pesos del portafolio), $\beta \in \mathbb{R}$ (umbral de pérdida, que en el óptimo coincide con el VaR), y $\mathbf{u} \in \mathbb{R}^S$ (excesos de pérdida sobre $\beta$). El óptimo $\beta^*$ resulta ser el VaR$_\alpha$, y el valor objetivo óptimo es el CVaR$_\alpha$. Como todas las restricciones y la función objetivo son lineales en $(\mathbf{w}, \beta, \mathbf{u})$, este es un LP con $n + 1 + S$ variables y $2S + n + 1$ restricciones, resoluble eficientemente con solvers estándar.
+
+*Interpretación financiera*: la formulación de Rockafellar-Uryasev permite optimizar simultáneamente la composición del portafolio y su medida de riesgo de cola, algo imposible con el VaR (que no es convexo en $\mathbf{w}$ para distribuciones generales).
 
 ### Propiedades
 
@@ -80,9 +104,27 @@ Minimizar el CVaR de un portafolio se puede formular como un problema de program
 
 | Método | Descripción |
 |--------|-------------|
-| **Paramétrico** | Asume normalidad: VaR = μ - z_α · σ (cotas de Chebyshev permiten relajar este supuesto; Boyd & Vandenberghe, 2004, §6.2) |
+| **Paramétrico** | Asume normalidad: VaR = μ - z_α · σ |
 | **Histórico** | Percentil de los rendimientos observados |
 | **Monte Carlo** | Percentil de las simulaciones (usado en esta clase) |
+
+**Proposición (Cota de Chebyshev para VaR, Boyd §6.2).** Sin asumir normalidad, si solo se conocen la media $\mu$ y la varianza $\sigma^2$ de la pérdida del portafolio, la desigualdad de Chebyshev proporciona una **cota superior** para el VaR:
+
+$$
+\text{VaR}_\alpha \leq \mu + \frac{\sigma}{\sqrt{1 - \alpha}}
+$$
+
+*Prueba.* Por la desigualdad de Chebyshev, $\Pr(|X - \mu| \geq k\sigma) \leq 1/k^2$. Sea la pérdida $L = -\mathbf{w}^\top\mathbf{r}$ con media $\mu_L$ y desviación $\sigma_L$. Entonces $\Pr(L \geq \mu_L + k\sigma_L) \leq 1/k^2$. Para que la probabilidad de exceder el VaR sea $\leq 1 - \alpha$, se necesita $1/k^2 = 1 - \alpha$, es decir $k = 1/\sqrt{1-\alpha}$. $\blacksquare$
+
+Cuando se busca el portafolio que minimiza esta cota peor-caso del VaR, el problema se formula como un **SOCP** (Second-Order Cone Program, Boyd §4.3.2):
+
+$$
+\min_{\mathbf{w}} \; -\boldsymbol{\mu}^\top\mathbf{w} + \frac{1}{\sqrt{1-\alpha}} \|\boldsymbol{\Sigma}^{1/2}\mathbf{w}\|_2 \qquad \text{s.a.} \quad \mathbf{1}^\top\mathbf{w} = 1, \; \mathbf{w} \geq 0
+$$
+
+La norma $\|\boldsymbol{\Sigma}^{1/2}\mathbf{w}\|_2$ es convexa (composición de norma con función afín), por lo que el problema completo es un SOCP resoluble eficientemente con CVXPY (`cp.norm(Sigma_half @ w, 2)`). Este enfoque es **libre de distribución**: no requiere el supuesto de normalidad, solo estimaciones de primer y segundo momento.
+
+*Interpretación financiera*: el VaR de Chebyshev es conservador (sobrestima el riesgo), pero es robusto ante errores de especificación distribucional. Es especialmente útil en mercados emergentes o períodos de crisis donde la distribución de rendimientos cambia rápidamente.
 
 ---
 

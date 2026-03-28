@@ -91,13 +91,37 @@ Preserva las varianzas individuales pero elimina todas las covarianzas.
 
 ### Coeficiente óptimo de contracción
 
-Ledoit & Wolf (2004) derivan una fórmula analítica para el α óptimo que minimiza la pérdida cuadrática esperada. Desde la perspectiva de estimación bayesiana, esto equivale a una estimación MAP con un prior que actúa como regularización (Boyd & Vandenberghe, 2004, §7.1–7.2):
+Ledoit & Wolf (2004) derivan una fórmula analítica para el α óptimo que minimiza la pérdida cuadrática esperada:
 
 $$
 \alpha^* = \arg\min_\alpha \, \mathbb{E}\left[\left\| \hat{\boldsymbol{\Sigma}}_{\text{shrunk}}(\alpha) - \boldsymbol{\Sigma} \right\|_F^2\right]
 $$
 
 donde la norma de Frobenius mide la distancia matricial. La solución tiene forma cerrada y se implementa en `sklearn.covariance.LedoitWolf`.
+
+**Proposición (Estimación ML de $\boldsymbol{\Sigma}$ y convexidad, Boyd §7.1).** Bajo el supuesto de rendimientos i.i.d. normales $\mathbf{r}_t \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$, la log-verosimilitud es:
+
+$$
+\ell(\boldsymbol{\mu}, \boldsymbol{\Sigma}) = -\frac{T}{2}\ln\det\boldsymbol{\Sigma} - \frac{1}{2}\sum_{t=1}^{T}(\mathbf{r}_t - \boldsymbol{\mu})^\top\boldsymbol{\Sigma}^{-1}(\mathbf{r}_t - \boldsymbol{\mu}) + \text{const.}
+$$
+
+Reparametrizando con $\boldsymbol{\Lambda} = \boldsymbol{\Sigma}^{-1}$ (la matriz de precisión), la log-verosimilitud se reescribe como:
+
+$$
+\ell(\boldsymbol{\Lambda}) = \frac{T}{2}\ln\det\boldsymbol{\Lambda} - \frac{1}{2}\text{tr}\!\left(\boldsymbol{\Lambda}\sum_{t=1}^{T}(\mathbf{r}_t - \bar{\mathbf{r}})(\mathbf{r}_t - \bar{\mathbf{r}})^\top\right)
+$$
+
+que es **cóncava** en $\boldsymbol{\Lambda} \succ 0$ (la función $\ln\det$ es cóncava sobre matrices definidas positivas, Boyd §3.1.5). Por tanto, maximizar la verosimilitud es un problema de optimización **convexo** (minimizar $-\ell$).
+
+**Interpretación MAP = Shrinkage (Boyd §7.1).** El estimador MAP agrega un **prior** a la log-verosimilitud:
+
+$$
+\hat{\boldsymbol{\Sigma}}_{\text{MAP}} = \arg\max_{\boldsymbol{\Sigma} \succ 0} \; \ell(\boldsymbol{\Sigma}) + \ln p(\boldsymbol{\Sigma})
+$$
+
+Con un prior de Wishart inverso centrado en $\mathbf{F}$, el término $\ln p(\boldsymbol{\Sigma})$ actúa como penalización $-\gamma\|\boldsymbol{\Sigma} - \mathbf{F}\|_F^2$, y la solución MAP toma exactamente la forma del estimador de contracción $(1-\alpha)\hat{\boldsymbol{\Sigma}} + \alpha\mathbf{F}$. Así, **shrinkage = estimación bayesiana con prior informativo**, y el coeficiente $\alpha$ codifica la confianza en el prior frente a los datos.
+
+*Interpretación financiera*: la estimación ML pura produce la covarianza muestral (sobreajusta a los datos). El prior bayesiano introduce la creencia de que la estructura de covarianza es "más simple" (cercana a $\mathbf{F}$), produciendo portafolios más estables exactamente porque incorpora información previa sobre la estructura del mercado.
 
 ---
 

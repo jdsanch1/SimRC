@@ -49,6 +49,26 @@ $$
 
 donde c > 0 es el **parámetro de corte** (tuning constant).
 
+**Definición (Penalización de Huber, Boyd Eq. 6.9, p. 294).** Boyd & Vandenberghe (2004, §6.1.2) definen la función de Huber con la notación $\phi_{\text{hub}}$:
+
+$$
+\phi_{\text{hub}}(x) = \begin{cases} x^2 & |x| \leq M \\ 2M|x| - M^2 & |x| > M \end{cases}
+$$
+
+donde $M > 0$ es el parámetro de umbral. La correspondencia con la notación estadística clásica es: $\phi_{\text{hub}}(x) = 2\rho_M(x)$ y el parámetro $M$ de Boyd corresponde al $c$ de Huber (1964). En CVXPY se invoca como `cp.huber(x, M)`.
+
+*Prueba de convexidad (Boyd §3.1.4).* Para $|x| < M$, $\phi''(x) = 2 \geq 0$. Para $|x| > M$, $\phi''(x) = 0 \geq 0$. En $x = \pm M$, la derivada $\phi'$ es continua: $\phi'(M^-) = 2M = \phi'(M^+)$. Una función con segunda derivada no negativa y derivada continua es convexa. $\blacksquare$
+
+**Comparación de funciones de pérdida (Boyd §6.1, pp. 293–295):**
+
+| Pérdida | Influencia $\phi'(u)$ | Eficiencia (normalidad) | Punto de quiebre |
+|---|---|---|---|
+| **Cuadrática** $u^2$ | $2u$ — ilimitada | 100% | 0% |
+| **Huber** | Acotada por $\pm 2M$ | 95% (con $M = 1.345\sigma$) | ~5–25% |
+| **Valor absoluto** $\|u\|$ | $\text{sign}(u)$ — discontinua | 64% | 50% |
+
+El estimador de Huber ocupa el punto óptimo del tradeoff eficiencia-robustez: casi tan eficiente como la media bajo normalidad, pero resistente a outliers.
+
 ### Función de influencia (ψ)
 
 La derivada de ρ define la función de influencia:

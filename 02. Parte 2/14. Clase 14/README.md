@@ -24,12 +24,43 @@ Introducir las **opciones barrera** (path-dependent) y su valuación por simulac
 
 ### Valuación por Monte Carlo
 
-Las opciones barrera no tienen solución analítica simple (a diferencia de Black-Scholes para europeas). Nótese que el payoff involucra composiciones de funciones (max, indicadoras); la composición $\max(f(x), 0)$ preserva la convexidad cuando $f$ es convexa (Boyd & Vandenberghe, 2004, §3.2), pero el producto con una indicadora de barrera puede romperla, lo que dificulta la optimización directa de portafolios de opciones barrera. La simulación Monte Carlo es el método estándar:
+Las opciones barrera no tienen solución analítica simple (a diferencia de Black-Scholes para europeas). La simulación Monte Carlo es el método estándar:
 
 1. Generar N trayectorias completas del precio
 2. Para cada trayectoria, verificar si la barrera fue tocada
 3. Calcular el payoff condicional
 4. Promediar y descontar
+
+#### Operaciones que preservan convexidad y sus limites (Boyd & Vandenberghe, 2004, §3.2)
+
+La valuacion de opciones involucra composiciones de funciones. El siguiente cuadro resume las operaciones que preservan (o rompen) la convexidad, con ejemplos financieros:
+
+| Operacion | Preserva convexidad? | Ejemplo financiero |
+|-----------|---------------------|-------------------|
+| $\max(f(x), 0)$ con $f$ convexa | Si (Boyd §3.2.3) | Payoff de call europeo: $\max(S_T - K, 0)$ |
+| Suma ponderada positiva $\sum \alpha_i f_i$ con $\alpha_i \geq 0$ | Si (Boyd §3.2.1) | Portafolio de calls: $\sum n_i \max(S_T - K_i, 0)$ |
+| Composicion $h(g(x))$ con $h$ convexa no-decreciente, $g$ convexa | Si (Boyd §3.2.4) | $\exp(\mathbf{w}^\top \Sigma \mathbf{w})$: riesgo exponencial |
+| Supremo $\sup_\alpha f(x, \alpha)$ | Si (Boyd §3.2.3) | Worst-case loss: $\max_i \text{Loss}_i(\mathbf{w})$ |
+| Producto $f(x) \cdot \mathbf{1}_A(x)$ con indicadora de conjunto | **No en general** | Payoff de opcion barrera: $\max(S_T-K,0) \cdot \mathbf{1}_{\{\max_t S_t > B\}}$ |
+| Minimo $\min(f(x), g(x))$ | **No** (pero el maximo si) | Cap + floor combinado |
+
+**Resultado clave: la funcion indicadora de barrera rompe la convexidad.** El payoff de una opcion knock-in es:
+
+$$
+V = e^{-rT} \max(S_T - K, 0) \cdot \mathbf{1}\left\{\max_{0 \leq t \leq T} S_t \geq B\right\}
+$$
+
+Aunque $\max(S_T - K, 0)$ es convexa en $S_T$, el producto con la indicadora $\mathbf{1}\{\max_t S_t \geq B\}$ no preserva convexidad porque la indicadora es discontinua y no es convexa ni concava (Boyd & Vandenberghe, 2004, §3.2). Esto explica por que la optimizacion de portafolios de opciones barrera **no se puede resolver con solvers convexos** y requiere simulacion Monte Carlo.
+
+#### Calibracion como aproximacion convexa (Boyd & Vandenberghe, 2004, §6.1)
+
+Aunque la valuacion directa de derivados exoticos no es convexa, la **calibracion de modelos** si puede formularse como un problema de optimizacion convexa. Dado un conjunto de precios de mercado $\{V_i^{\text{mkt}}\}$ y un modelo parametrico $V_i(\boldsymbol{\theta})$, la calibracion por minimos cuadrados:
+
+$$
+\min_{\boldsymbol{\theta}} \; \sum_{i=1}^{m} \left( V_i(\boldsymbol{\theta}) - V_i^{\text{mkt}} \right)^2
+$$
+
+es convexa cuando $V_i(\boldsymbol{\theta})$ es afin en $\boldsymbol{\theta}$ (como en el caso de interpolacion de superficies de volatilidad implicita con funciones base lineales). Para modelos no lineales (Heston, SABR), se usan **aproximaciones convexas** locales (linearizacion de Taylor) dentro de algoritmos iterativos tipo Gauss-Newton (Boyd & Vandenberghe, 2004, §6.1.1). Cada paso del algoritmo resuelve un subproblema de minimos cuadrados convexo, garantizando convergencia local.
 
 ---
 
