@@ -65,6 +65,49 @@ es un **SOCP** (Second-Order Cone Program), una subclase de los problemas convex
 
 ---
 
+## Estrategias de opciones
+
+Además de la optimización de portafolios, esta clase cubre **estrategias combinadas** de opciones (Hull, 2018, Cap. 12):
+
+| Estrategia | Composición | Visión del mercado | Ganancia máx. | Pérdida máx. |
+|-----------|-------------|-------------------|:---:|:---:|
+| **Bull Call Spread** | Long call K₁ + short call K₂ | Moderadamente alcista | K₂ - K₁ - costo | Costo neto |
+| **Bear Put Spread** | Long put K₂ + short put K₁ | Moderadamente bajista | K₂ - K₁ - costo | Costo neto |
+| **Straddle** | Long call K + long put K | Alta volatilidad | Ilimitada | c + p |
+| **Strangle** | Long call K₂ + long put K₁ | Alta volatilidad (más barato) | Ilimitada | c + p |
+| **Butterfly** | Long 1 call K₁ + short 2 call K + long 1 call K₂ | Baja volatilidad | K - K₁ - costo | Costo neto |
+
+### Convexidad de los payoffs de estrategias
+
+La convexidad/concavidad del payoff de una estrategia determina si se puede optimizar con herramientas convexas (Boyd & Vandenberghe, 2004, §3.2.3):
+
+- **Long call/put**: payoff convexo (max(x,0) es convexa)
+- **Straddle**: payoff convexo (suma de convexas)
+- **Bull/bear spread**: payoff **cóncavo** (se resta una convexa)
+
+---
+
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY — SOCP](https://www.cvxpy.org/examples/basic/socp.html) | Ejemplo de SOCP en CVXPY |
+| [Hull Cap. 12](https://www.pearson.com/) | Trading Strategies Involving Options |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 3** | Opciones básicas (payoff, P&L, IV) |
+| **Clase 4** | Frontera eficiente estándar (sin regularización) |
+| **Clase 5** | Shrinkage como regularización de Σ |
+| **Clase 11** | Frontera eficiente con portfolio_func.py |
+| **Clase 14** | Opciones barrera (extensión path-dependent) |
+
+---
+
 ## Referencias bibliográficas
 
 ### Textos principales
