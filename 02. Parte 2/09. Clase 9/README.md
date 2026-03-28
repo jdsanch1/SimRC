@@ -81,6 +81,7 @@ donde $f_i(\mathbf{w}) \leq 0$ son las restricciones y $t > 0$ es un parametro q
 
 ### Textos principales
 
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.4 (QP con restricciones), §4.6 (QCQP), §11.1 (métodos de punto interior usados por los solvers de CVXPY).
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.

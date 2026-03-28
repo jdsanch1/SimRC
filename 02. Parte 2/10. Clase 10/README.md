@@ -112,6 +112,7 @@ Eliminando $w_0$: $\mu_p = r_f + \frac{\mu_T - r_f}{\sigma_T} \sigma_p$, que es 
 
 ### Textos principales
 
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3 (programación lineal), §5.1–5.2, §5.6 (dualidad y precios sombra).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6: Mean-Variance Portfolio Theory.

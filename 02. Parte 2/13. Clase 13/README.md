@@ -100,6 +100,7 @@ En el problema donde se maximiza rendimiento sujeto a riesgo máximo, el multipl
 
 ### Textos principales
 
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3.2 (SOCP/CML), §5.6 (precios sombra).
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6–8.

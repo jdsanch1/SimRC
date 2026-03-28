@@ -155,7 +155,7 @@ CVXPY utiliza el paradigma **DCP** (Disciplined Convex Programming, Boyd & Vande
 
 ### Maximización del Sharpe (transformación)
 
-El ratio de Sharpe es una función **cuasi-convexa** — razón de una función afín y una convexa (Boyd & Vandenberghe, 2004, §4.3.2). Se usa la **transformación de Cornuejols y Tütüncü** para convertirlo en un QP estándar:
+El ratio de Sharpe es una función **cuasi-convexa** — razón de una función afín y una convexa (Boyd & Vandenberghe, 2004, §4.3.2). Se usa la **transformación de Charnes-Cooper (1962)** para convertirlo en un QP estándar:
 
 Definir y = w / κ y resolver:
 
@@ -195,6 +195,7 @@ El **dendrograma** muestra la estructura de similitud entre activos basada en la
 
 ### Textos principales
 
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — Cap. 4 (§4.2.3 DCP, §4.3.2 funciones cuasi-convexas, §4.4 QP, §4.7.3–4.7.4 optimización paramétrica y multi-criterio).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
   - Cap. 22: Estimating Volatilities and Correlations.

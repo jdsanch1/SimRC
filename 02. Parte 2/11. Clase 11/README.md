@@ -81,6 +81,7 @@ En la verificacion DCP del problema de Markowitz: `cp.quad_form(w, Σ)` es conve
 
 ### Textos principales
 
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — Cap. 3–5 (reglas DCP, QP, optimización paramétrica, dualidad, KKT), Cap. 11 (métodos de punto interior).
 - **Ledoit, O. & Wolf, M.** (2004). *Journal of Multivariate Analysis*, 88(2), 365–411.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
