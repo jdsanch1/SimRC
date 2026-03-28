@@ -81,7 +81,7 @@ $$
 \boldsymbol{\mu}^\top \mathbf{w} = \mu^*, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
 $$
 
-Este es un **problema cuadrático convexo** (QP): objetivo cuadrático convexo con restricciones lineales.
+Este es un **problema cuadrático convexo** (QP): objetivo cuadrático convexo con restricciones lineales (Boyd & Vandenberghe, 2004, §4.4). Boyd demuestra que este problema tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$.
 
 ### Portafolio de mínima varianza (MVP)
 

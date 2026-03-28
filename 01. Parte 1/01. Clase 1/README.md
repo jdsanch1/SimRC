@@ -260,25 +260,11 @@ $$
 \sigma_p^2 = \mathbf{w}^\top \boldsymbol{\Sigma} \, \mathbf{w}
 $$
 
-donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vector de pesos.
+donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vector de pesos. Esta expresión es una **forma cuadrática** que resulta convexa cuando $\boldsymbol{\Sigma}$ es semidefinida positiva (Boyd & Vandenberghe, 2004, §3.1.5), propiedad fundamental para la optimización de portafolios. Además, el conjunto de portafolios factibles (pesos no negativos que suman 1) forma un **simplex**, que es un conjunto convexo (Boyd & Vandenberghe, 2004, §2.1–2.2).
 
 ---
 
 ## Referencias bibliográficas
-
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-Los siguientes conceptos del libro *Convex Optimization* se introducen en esta clase y se desarrollan progresivamente en el curso:
-
-- **§2.1–2.2 Conjuntos convexos** (pp. 21–36): El conjunto de portafolios factibles (pesos que suman 1, no negativos) forma un **simplex**, que es un conjunto convexo. Este concepto es fundamental para la optimización de portafolios.
-  - Un conjunto C es **convexo** si para todo x, y ∈ C y 0 ≤ θ ≤ 1: θx + (1-θ)y ∈ C
-  - El simplex estándar: Δ = {w ∈ ℝⁿ : Σwᵢ = 1, wᵢ ≥ 0}
-
-- **§A.1 Normas** (pp. 635–637): La desviación estándar σ es proporcional a la norma L₂ del vector de desviaciones. Las normas son funciones convexas, lo que garantiza que minimizar riesgo es un problema convexo.
-
-- **§3.1.5 Formas cuadráticas** (pp. 71–72): La varianza del portafolio σ²_p = w'Σw es una **forma cuadrática**. Si Σ es semidefinida positiva (PSD), esta forma es convexa — base de toda la optimización de portafolios.
-
-> **Nota**: El libro completo está disponible gratuitamente en [stanford.edu/~boyd/cvxbook](https://web.stanford.edu/~boyd/cvxbook/).
 
 ### Textos principales
 
@@ -308,7 +294,7 @@ Los siguientes conceptos del libro *Convex Optimization* se introducen en esta c
 ### Referencias técnicas
 
 - **Bollinger, J.** (2002). *Bollinger on Bollinger Bands*. McGraw-Hill.
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — Referencia para las clases de optimización de portafolios (Clases 4, 5, 11).
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §2.1–2.2 (conjuntos convexos, simplex), §3.1.5 (formas cuadráticas), §A.1 (normas).
 
 ---
 

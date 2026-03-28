@@ -46,7 +46,7 @@ $$
 Para $n$ activos, $\boldsymbol{\Sigma}$ es una matriz $n \times n$ con las siguientes propiedades:
 
 - **Simétrica**: $\sigma_{ij} = \sigma_{ji}$
-- **Semidefinida positiva** (SDP): $\mathbf{x}^\top \boldsymbol{\Sigma} \, \mathbf{x} \geq 0$ para todo $\mathbf{x}$
+- **Semidefinida positiva** (SDP): $\mathbf{x}^\top \boldsymbol{\Sigma} \, \mathbf{x} \geq 0$ para todo $\mathbf{x}$, es decir, $\boldsymbol{\Sigma}$ pertenece al cono de matrices semidefinidas positivas $\mathcal{S}^+_n$ (Boyd & Vandenberghe, 2004, §2.4)
 
 ### Estimador muestral
 
@@ -62,7 +62,7 @@ $$
 \sigma_p^2 = \mathbf{w}^\top \boldsymbol{\Sigma} \, \mathbf{w} = \sum_{i=1}^{n} \sum_{j=1}^{n} w_i \, w_j \, \sigma_{ij}
 $$
 
-Esta expresión es la base de la **optimización media-varianza** de Markowitz (1952).
+Esta forma cuadrática es convexa cuando $\boldsymbol{\Sigma} \succeq 0$ (Boyd & Vandenberghe, 2004, §3.1.5), lo que garantiza que la optimización media-varianza de Markowitz (1952) sea un problema convexo.
 
 ### Anualización
 
@@ -132,6 +132,8 @@ $$
 \beta_i = \frac{\text{Cov}(r_i, r_m)}{\text{Var}(r_m)}
 $$
 
+La estimación de $\beta$ por regresión lineal es el problema de aproximación por mínimos cuadrados más básico: minimizar $\|A\mathbf{x} - \mathbf{b}\|_2^2$, un problema de optimización convexa (Boyd & Vandenberghe, 2004, §6.1).
+
 ### Interpretación
 
 | $\beta$ | Significado |
@@ -151,7 +153,7 @@ La estimación muestral $\hat{\boldsymbol{\Sigma}}$ tiene problemas conocidos, e
 
 1. **Error de estimación**: con $n$ activos hay $n(n+1)/2$ parámetros a estimar, lo que genera inestabilidad.
 2. **Sensibilidad a outliers**: valores extremos pueden distorsionar las estimaciones.
-3. **Portafolios inestables**: pequeños cambios en $\hat{\boldsymbol{\Sigma}}$ producen pesos óptimos muy diferentes.
+3. **Portafolios inestables**: pequeños cambios en $\hat{\boldsymbol{\Sigma}}$ producen pesos óptimos muy diferentes. En particular, cuando la covarianza muestral no es estrictamente definida positiva, se pierde la garantía de solución única en la optimización (Boyd & Vandenberghe, 2004, §A.4).
 
 Estos problemas motivan los **estimadores robustos** que se estudiarán en las Clases 5 y 6:
 - **Shrunk Covariance** (Clase 5): contrae la covarianza muestral hacia una estructura más estable.
@@ -175,18 +177,9 @@ Estos problemas motivan los **estimadores robustos** que se estudiarán en las C
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-- **§2.4 Conos semidefinidos positivos** (p. 34): La matriz de covarianza Σ pertenece al cono de matrices semidefinidas positivas S⁺ₙ. Este cono es convexo y cerrado, lo que garantiza que las restricciones sobre Σ en optimización sean convexas.
-  - Σ ∈ S⁺ₙ ⟺ x'Σx ≥ 0 para todo x ∈ ℝⁿ ⟺ todos los eigenvalores son ≥ 0
-
-- **§3.1.5 Formas cuadráticas** (pp. 71–72): La función w'Σw es convexa cuando Σ ⪰ 0 (PSD). La convexidad de esta forma es lo que hace que la optimización media-varianza de Markowitz sea un problema de programación cuadrática convexa.
-
-- **§A.4 Matrices semidefinidas positivas** (pp. 642–643): Propiedades clave de las matrices PSD: factorización de Cholesky, relación con eigenvalores, y por qué la covarianza muestral puede no ser PSD con pocos datos (motivando los estimadores robustos de la Clase 5).
-
-- **§6.1 Aproximación por mínimos cuadrados** (pp. 291–295): La regresión lineal (usada para estimar beta) es el problema de optimización convexa más básico: minimizar ||Ax - b||²₂.
-
 ### Textos principales
+
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §2.4 (conos semidefinidos positivos), §3.1.5 (formas cuadráticas), §6.1 (mínimos cuadrados), §A.4 (matrices PSD).
 
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
   - Cap. 22: Estimating Volatilities and Correlations.
