@@ -114,7 +114,7 @@ $$
 \text{VaR}_\alpha \leq \mu + \frac{\sigma}{\sqrt{1 - \alpha}}
 $$
 
-*Prueba.* Por la desigualdad de Chebyshev, $\Pr(|X - \mu| \geq k\sigma) \leq 1/k^2$. Sea la pérdida $L = -\mathbf{w}^\top\mathbf{r}$ con media $\mu_L$ y desviación $\sigma_L$. Entonces $\Pr(L \geq \mu_L + k\sigma_L) \leq 1/k^2$. Para que la probabilidad de exceder el VaR sea $\leq 1 - \alpha$, se necesita $1/k^2 = 1 - \alpha$, es decir $k = 1/\sqrt{1-\alpha}$. $\blacksquare$
+*Prueba.* Por la desigualdad de Chebyshev, $\Pr(|X - \mu| \geq k\sigma) \leq 1/k^2$. Sea la pérdida $L = -\mathbf{w}^\top\mathbf{r}$ con media $\mu_L$ y desviación $\sigma_L$. Entonces $\Pr(L \geq \mu_L + k\sigma_L) \leq 1/k^2$. Para que la probabilidad de exceder el VaR sea $\leq 1 - \alpha$, se necesita $1/k^2 = 1 - \alpha$, es decir $k = 1/\sqrt{1-\alpha}$. ∎
 
 Cuando se busca el portafolio que minimiza esta cota peor-caso del VaR, el problema se formula como un **SOCP** (Second-Order Cone Program, Boyd §4.3.2):
 

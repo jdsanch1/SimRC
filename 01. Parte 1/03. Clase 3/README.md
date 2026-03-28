@@ -58,7 +58,7 @@ $$
 f(\theta x + (1-\theta)y) = \max(\theta x + (1-\theta)y, \; 0) \leq \max(\theta x, 0) + \max((1-\theta)y, 0) = \theta\max(x,0) + (1-\theta)\max(y,0)
 $$
 
-donde la desigualdad usa la subaditividad de $\max(\cdot, 0)$. Equivalentemente, $f$ es el supremo de las funciones afines $\{x, 0\}$, y el supremo de funciones convexas es convexo (Boyd §3.2.3). $\blacksquare$
+donde la desigualdad usa la subaditividad de $\max(\cdot, 0)$. Equivalentemente, $f$ es el supremo de las funciones afines $\{x, 0\}$, y el supremo de funciones convexas es convexo (Boyd §3.2.3). ∎
 
 **Teorema (Regla de composición, Boyd §3.2.4).** Si $h: \mathbb{R}^n \to \mathbb{R}$ es convexa y $g: \mathbb{R} \to \mathbb{R}$ es convexa y no decreciente, entonces $f = g \circ h$ es convexa.
 

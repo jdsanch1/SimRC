@@ -110,8 +110,8 @@ con $P \succeq 0$. Para el problema de Markowitz:
 | $\mathbf{q}$ | $\mathbf{0}$ (sin término lineal en el objetivo) |
 | $G$ | $-\mathbf{I}_n$ (restricciones $w_i \geq 0$) |
 | $\mathbf{h}$ | $\mathbf{0}$ |
-| $A$ | $\begin{pmatrix} \boldsymbol{\mu}^\top \\ \mathbf{1}^\top \end{pmatrix}$ (rendimiento objetivo + pesos suman 1) |
-| $\mathbf{b}$ | $\begin{pmatrix} \mu^* \\ 1 \end{pmatrix}$ |
+| A | Matriz de restricciones de igualdad (rendimiento objetivo + pesos suman 1) |
+| b | Vector objetivo (μ*, 1) |
 
 **Reglas de verificación DCP (Boyd §3.2).** CVXPY valida convexidad mediante reglas composicionales:
 
@@ -126,7 +126,7 @@ El QP tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$.
 
 **Teorema (Optimización paramétrica, Boyd §5.6.1).** Sea $p^*(\mu^*)$ la función de valor óptimo del QP de Markowitz parametrizada por el rendimiento objetivo $\mu^*$. Entonces $p^*(\mu^*)$ es convexa en $\mu^*$.
 
-*Prueba (esquema).* El conjunto factible se contrae cuando se impone una restricción más estricta sobre $\mu^*$. Formalmente, $p^*(\mu^*) = \inf_{\mathbf{w} \in \mathcal{F}(\mu^*)} \mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}$ donde $\mathcal{F}(\mu^*) = \{\mathbf{w} \mid \boldsymbol{\mu}^\top\mathbf{w} = \mu^*, \sum w_i = 1, w_i \geq 0\}$. Para $\theta \in [0,1]$, los portafolios factibles para $\theta\mu_1^* + (1-\theta)\mu_2^*$ contienen las combinaciones convexas de los factibles para $\mu_1^*$ y $\mu_2^*$, y por convexidad de la forma cuadrática se obtiene $p^*(\theta\mu_1^*+(1-\theta)\mu_2^*) \leq \theta p^*(\mu_1^*) + (1-\theta) p^*(\mu_2^*)$. $\blacksquare$
+*Prueba (esquema).* El conjunto factible se contrae cuando se impone una restricción más estricta sobre $\mu^*$. Formalmente, $p^*(\mu^*) = \inf_{\mathbf{w} \in \mathcal{F}(\mu^*)} \mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}$ donde $\mathcal{F}(\mu^*) = \{\mathbf{w} \mid \boldsymbol{\mu}^\top\mathbf{w} = \mu^*, \sum w_i = 1, w_i \geq 0\}$. Para $\theta \in [0,1]$, los portafolios factibles para $\theta\mu_1^* + (1-\theta)\mu_2^*$ contienen las combinaciones convexas de los factibles para $\mu_1^*$ y $\mu_2^*$, y por convexidad de la forma cuadrática se obtiene $p^*(\theta\mu_1^*+(1-\theta)\mu_2^*) \leq \theta p^*(\mu_1^*) + (1-\theta) p^*(\mu_2^*)$. ∎
 
 *Interpretación financiera*: la frontera eficiente en el espacio $(\sigma_p^2, \mu_p)$ es una curva convexa. Esto garantiza suavidad y continuidad: no hay "saltos" en la frontera, y el tradeoff riesgo-rendimiento se encarece de forma creciente.
 

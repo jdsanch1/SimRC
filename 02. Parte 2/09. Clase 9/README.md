@@ -53,7 +53,7 @@ es un QP convexo. La interseccion de un numero finito de semiespacios y planos (
 |-------------|------------|------|
 | Limites sectoriales | $\sum_{i \in S_k} w_i \leq u_k$ | Desigualdad lineal |
 | Posicion maxima | $w_i \leq w_{\max}$ | Cota superior |
-| Turnover | $\sum_i |w_i - w_i^{(\text{prev})}| \leq \tau$ (se linealiza con variables auxiliares) | Desigualdad lineal |
+| Turnover | Suma de cambios absolutos ≤ τ (se linealiza) | Desigualdad lineal |
 
 #### QCQP para tracking error (Boyd & Vandenberghe, 2004, §4.6)
 

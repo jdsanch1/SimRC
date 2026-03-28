@@ -63,11 +63,11 @@ donde $\ell(\theta)$ es la pérdida (ajuste a los datos) y $R(\theta)$ es el reg
 
 | Regularizador $R(\theta)$ | Nombre | Efecto | Ejemplo financiero |
 |---|---|---|---|
-| $\|\theta\|_2^2$ (norma $L_2$ al cuadrado) | Ridge / Tikhonov | Contrae parámetros hacia cero | Shrinkage hacia $\mathbf{F} = \frac{\text{tr}(\hat{\Sigma})}{n}\mathbf{I}$ |
-| $\|\theta\|_1$ (norma $L_1$) | LASSO | Produce soluciones **dispersas** (sparsity) | Selección de activos (covarianza sparse) |
-| $\|\theta - \theta_0\|_F^2$ (distancia a un objetivo) | Contracción hacia target | Contrae hacia una estructura previa $\theta_0$ | $\hat{\Sigma}_{\text{shrunk}}$ hacia $\text{diag}(\hat{\Sigma})$ |
+| Norma L₂ al cuadrado | Ridge / Tikhonov | Contrae parámetros hacia cero | Shrinkage hacia identidad escalada |
+| Norma L₁ | LASSO | Produce soluciones **dispersas** (sparsity) | Selección de activos |
+| Distancia a un objetivo | Contracción hacia target | Contrae hacia estructura previa | Shrinkage hacia diagonal de Σ |
 
-*Prueba de que el shrinkage resuelve una proyección convexa regularizada.* El estimador de Ledoit-Wolf minimiza la pérdida cuadrática $\|\hat{\Sigma}_{\text{shrunk}} - \Sigma\|_F^2$ sobre combinaciones convexas de $\hat{\Sigma}$ y $\mathbf{F}$. Sustituyendo $\hat{\Sigma}_{\text{shrunk}} = (1-\alpha)\hat{\Sigma} + \alpha\mathbf{F}$ y derivando respecto a $\alpha$, el problema se reduce a una minimización cuadrática univariada en $\alpha \in [0,1]$, que es convexa con solución cerrada. El conjunto factible $\{(1-\alpha)\hat{\Sigma} + \alpha\mathbf{F} \mid \alpha \in [0,1]\}$ es un segmento de línea en el espacio de matrices (convexo), y la función objetivo es cuadrática convexa en $\alpha$. $\blacksquare$
+*Prueba de que el shrinkage resuelve una proyección convexa regularizada.* El estimador de Ledoit-Wolf minimiza la pérdida cuadrática $\|\hat{\Sigma}_{\text{shrunk}} - \Sigma\|_F^2$ sobre combinaciones convexas de $\hat{\Sigma}$ y $\mathbf{F}$. Sustituyendo $\hat{\Sigma}_{\text{shrunk}} = (1-\alpha)\hat{\Sigma} + \alpha\mathbf{F}$ y derivando respecto a $\alpha$, el problema se reduce a una minimización cuadrática univariada en $\alpha \in [0,1]$, que es convexa con solución cerrada. El conjunto factible $\{(1-\alpha)\hat{\Sigma} + \alpha\mathbf{F} \mid \alpha \in [0,1]\}$ es un segmento de línea en el espacio de matrices (convexo), y la función objetivo es cuadrática convexa en $\alpha$. ∎
 
 *Interpretación financiera*: al agregar regularización, aceptamos un pequeño sesgo a cambio de una reducción significativa en la varianza del estimador. El parámetro $\gamma$ (o $\alpha$) controla este tradeoff sesgo-varianza, que es análogo al tradeoff rendimiento-riesgo en la teoría de portafolios.
 

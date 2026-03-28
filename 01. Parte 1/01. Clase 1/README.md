@@ -274,7 +274,7 @@ $$
 \Delta_n = \left\{ \mathbf{w} \in \mathbb{R}^n \;\middle|\; \sum_{i=1}^{n} w_i = 1, \; w_i \geq 0 \right\}
 $$
 
-*Prueba de que $\Delta_n$ es convexo.* Sean $\mathbf{w}, \mathbf{v} \in \Delta_n$ y $\theta \in [0,1]$. Definamos $\mathbf{z} = \theta \mathbf{w} + (1-\theta)\mathbf{v}$. Entonces $z_i = \theta w_i + (1-\theta)v_i \geq 0$ (combinación convexa de no negativos) y $\sum_i z_i = \theta \sum_i w_i + (1-\theta)\sum_i v_i = \theta + (1-\theta) = 1$. Por tanto $\mathbf{z} \in \Delta_n$. $\blacksquare$
+*Prueba de que $\Delta_n$ es convexo.* Sean $\mathbf{w}, \mathbf{v} \in \Delta_n$ y $\theta \in [0,1]$. Definamos $\mathbf{z} = \theta \mathbf{w} + (1-\theta)\mathbf{v}$. Entonces $z_i = \theta w_i + (1-\theta)v_i \geq 0$ (combinación convexa de no negativos) y $\sum_i z_i = \theta \sum_i w_i + (1-\theta)\sum_i v_i = \theta + (1-\theta) = 1$. Por tanto $\mathbf{z} \in \Delta_n$. ∎
 
 *Interpretación financiera*: cualquier mezcla de dos portafolios factibles es también un portafolio factible, lo que permite interpolar suavemente entre estrategias.
 

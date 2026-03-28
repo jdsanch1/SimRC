@@ -38,10 +38,10 @@ La valuacion de opciones involucra composiciones de funciones. El siguiente cuad
 | Operacion | Preserva convexidad? | Ejemplo financiero |
 |-----------|---------------------|-------------------|
 | $\max(f(x), 0)$ con $f$ convexa | Si (Boyd §3.2.3) | Payoff de call europeo: $\max(S_T - K, 0)$ |
-| Suma ponderada positiva $\sum \alpha_i f_i$ con $\alpha_i \geq 0$ | Si (Boyd §3.2.1) | Portafolio de calls: $\sum n_i \max(S_T - K_i, 0)$ |
+| Suma ponderada positiva (αᵢ ≥ 0) | Sí (Boyd §3.2.1) | Portafolio de calls: $\sum n_i \max(S_T - K_i, 0)$ |
 | Composicion $h(g(x))$ con $h$ convexa no-decreciente, $g$ convexa | Si (Boyd §3.2.4) | $\exp(\mathbf{w}^\top \Sigma \mathbf{w})$: riesgo exponencial |
 | Supremo $\sup_\alpha f(x, \alpha)$ | Si (Boyd §3.2.3) | Worst-case loss: $\max_i \text{Loss}_i(\mathbf{w})$ |
-| Producto $f(x) \cdot \mathbf{1}_A(x)$ con indicadora de conjunto | **No en general** | Payoff de opcion barrera: $\max(S_T-K,0) \cdot \mathbf{1}_{\{\max_t S_t > B\}}$ |
+| Producto con función indicadora | **No en general** | Payoff de opcion barrera: $\max(S_T-K,0) \cdot \mathbf{1}_{\{\max_t S_t > B\}}$ |
 | Minimo $\min(f(x), g(x))$ | **No** (pero el maximo si) | Cap + floor combinado |
 
 **Resultado clave: la funcion indicadora de barrera rompe la convexidad.** El payoff de una opcion knock-in es:
