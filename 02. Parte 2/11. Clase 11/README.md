@@ -89,6 +89,41 @@ En la verificacion DCP del problema de Markowitz: `cp.quad_form(w, Σ)` es conve
 
 ---
 
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY](https://www.cvxpy.org/) | Optimización convexa (DCP) |
+| [CVXPY Tutorial: QP](https://www.cvxpy.org/examples/basic/quadratic_program.html) | Ejemplo de QP en CVXPY |
+| [sklearn.covariance](https://scikit-learn.org/stable/modules/covariance.html) | Estimadores de covarianza |
+| [statsmodels.robust](https://www.statsmodels.org/stable/robust.html) | Estimación robusta (Huber) |
+
+### Funciones de `portfolio_func.py`
+
+| Función | Descripción | Estimadores |
+|---------|-------------|-------------|
+| `get_historical_closes()` | Descarga datos con yfinance | — |
+| `calc_daily_returns()` | Rendimientos logarítmicos | — |
+| `sim_mont_portfolio()` | Monte Carlo de portafolios | Huber μ + ShrunkCov Σ |
+| `optimal_portfolio()` | Frontera eficiente (CVXPY) | Huber μ + ShrunkCov Σ |
+| `optimal_portfolio_b()` | Frontera con bono (CVXPY) | Huber μ + ShrunkCov Σ |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 4** | Frontera eficiente básica (sin funciones reutilizables) |
+| **Clase 5** | Covarianza robusta (Ledoit-Wolf / ShrunkCov) |
+| **Clase 6** | Media robusta (Huber) |
+| **Clase 9** | Monte Carlo vs. Markowitz (sin bono) |
+| **Clase 10** | CML y activo libre de riesgo |
+| **Clase 12** | Extensiones: tracking error, regularización L₁/L₂ |
+| **Clase 13** | Comparación MC vs Markowitz con bono |
+
+---
+
 ## Navegación del curso
 
 ← **Anterior**: Clase 10: Activo libre de riesgo
