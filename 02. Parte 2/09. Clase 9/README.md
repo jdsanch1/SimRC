@@ -15,7 +15,17 @@ Refinar la simulación Monte Carlo de portafolios incorporando estimadores robus
 
 ### Simulación Monte Carlo de portafolios
 
-Se generan N portafolios con pesos aleatorios (distribución de Dirichlet) y se evalúa el rendimiento y riesgo de cada uno usando estimadores robustos. En la práctica, los portafolios pueden tener restricciones adicionales (límites sectoriales, posiciones máximas, turnover) que, al ser lineales, preservan la convexidad del QP (Boyd & Vandenberghe, 2004, §4.4). Restricciones cuadráticas como el tracking error convierten el problema en un QCQP que sigue siendo convexo (Boyd & Vandenberghe, 2004, §4.6).
+Se generan N portafolios con pesos aleatorios y se evalúa el rendimiento y riesgo de cada uno usando estimadores robustos.
+
+**Distribución de Dirichlet para pesos aleatorios.** Los pesos se generan con $\mathbf{w} \sim \text{Dirichlet}(\mathbf{1}_n)$, que produce vectores uniformemente distribuidos en el simplex $\Delta_n = \{\mathbf{w} \geq 0, \sum w_i = 1\}$. Para cada portafolio se calcula:
+
+$$
+\mu_p = 252 \, \hat{\boldsymbol{\mu}}^\top \mathbf{w}, \qquad \sigma_p = \sqrt{252 \, \mathbf{w}^\top \hat{\Sigma} \, \mathbf{w}}
+$$
+
+donde $\hat{\boldsymbol{\mu}}$ es el estimador de Huber (Clase 6) y $\hat{\Sigma}$ el de Ledoit-Wolf (Clase 5).
+
+En la práctica, los portafolios pueden tener restricciones adicionales (límites sectoriales, posiciones máximas, turnover) que, al ser lineales, preservan la convexidad del QP (Boyd & Vandenberghe, 2004, §4.4). Restricciones cuadráticas como el tracking error convierten el problema en un QCQP que sigue siendo convexo (Boyd & Vandenberghe, 2004, §4.6).
 
 ### Comparación MC vs. optimización
 
@@ -75,6 +85,29 @@ donde $f_i(\mathbf{w}) \leq 0$ son las restricciones y $t > 0$ es un parametro q
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning.
+
+---
+
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY](https://www.cvxpy.org/) | Optimización convexa (DCP) |
+| [sklearn.covariance.LedoitWolf](https://scikit-learn.org/stable/modules/generated/sklearn.covariance.LedoitWolf.html) | Covarianza robusta |
+| [numpy.random.dirichlet](https://numpy.org/doc/stable/reference/random/generated/numpy.random.dirichlet.html) | Generación de pesos aleatorios |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 4** | Frontera eficiente y Sharpe con CVXPY |
+| **Clase 5** | Covarianza robusta (Ledoit-Wolf) usada aquí |
+| **Clase 6** | Media robusta (Huber) usada aquí |
+| **Clase 7** | VaR/CVaR como medidas de riesgo alternativas |
+| **Clase 10** | Extiende con activo libre de riesgo (bono) |
+| **Clase 11** | Frontera eficiente con `portfolio_func.py` reutilizable |
 
 ---
 
