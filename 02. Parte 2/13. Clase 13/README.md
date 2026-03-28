@@ -7,47 +7,92 @@
 
 ## Objetivo
 
-Comparar la simulación Monte Carlo con la optimización de Markowitz para portafolios que incluyen un activo libre de riesgo (bono), usando tres métodos de simulación de rendimientos (normal, histograma, KDE).
+Comparar la simulación Monte Carlo con la optimización de Markowitz para portafolios que incluyen un activo libre de riesgo (bono), usando tres métodos de simulación de rendimientos (normal, histograma, KDE) y clasificando los precios finales en regiones de riesgo.
 
 ---
 
 ## Contenido teórico
 
-### CML como SOCP via transformación de Charnes-Cooper (Boyd & Vandenberghe, 2004, §4.3.2)
+### Tres modelos de simulación de rendimientos
 
-El portafolio tangente (maximo Sharpe ratio) se formula originalmente como un problema fraccional no convexo:
+| Modelo | Generación de rendimientos | Captura colas pesadas | Resultado |
+|--------|---------------------------|:---------------------:|-----------|
+| **Normal** | r ~ N(μ, σ²) con estimadores Huber | No | Base de comparación (supuesto GBM) |
+| **Histograma** | Muestreo empírico discreto (250 bins) | Sí | Captura la forma real |
+| **KDE** | Kernel gaussiano suavizado | Sí | Continuo y flexible |
 
-$$
-\max_{\mathbf{w}} \; \frac{\boldsymbol{\mu}^\top \mathbf{w} - r_f}{\sqrt{\mathbf{w}^\top \Sigma \mathbf{w}}} \quad \text{s.a.} \quad \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
-$$
+### Regiones de riesgo
 
-**Teorema (Charnes-Cooper, 1962).** La transformacion $\mathbf{y} = t \mathbf{w}$, $t = 1/(\mathbf{1}^\top \mathbf{w})$ convierte el problema fraccional en un **SOCP** equivalente:
+Dados dos niveles de precio K₁ < K₂, el precio final S_T se clasifica en:
 
-$$
-\max_{\mathbf{y}, t} \; \boldsymbol{\mu}^\top \mathbf{y} - r_f \cdot t \quad \text{s.a.} \quad \| \Sigma^{1/2} \mathbf{y} \|_2 \leq 1, \; \mathbf{1}^\top \mathbf{y} = t, \; t \geq 0, \; \mathbf{y} \geq 0
-$$
+- S_T < K₁ — zona de **pérdida** significativa
+- K₁ ≤ S_T ≤ K₂ — zona **neutral**
+- S_T > K₂ — zona de **ganancia** significativa
 
-*Bosquejo de prueba.* Sea $\mathbf{w}$ factible con $\mathbf{1}^\top \mathbf{w} > 0$. Definiendo $t = (\mathbf{1}^\top \mathbf{w})^{-1}$ y $\mathbf{y} = t\mathbf{w}$, se tiene $\mathbf{1}^\top \mathbf{y} = t$ y el denominador del Sharpe ratio se normaliza a $\|\Sigma^{1/2}\mathbf{y}\|_2 / t$. Fijando $\|\Sigma^{1/2}\mathbf{y}\|_2 = 1$, maximizar el numerador $\boldsymbol{\mu}^\top \mathbf{y} - r_f t$ es equivalente a maximizar el ratio original. La restriccion $\|\Sigma^{1/2}\mathbf{y}\|_2 \leq 1$ define un cono de segundo orden, y el objetivo es lineal en $(\mathbf{y}, t)$, lo que hace del problema un SOCP (Boyd & Vandenberghe, 2004, §4.3.2). $\square$
+La distribución de frecuencias entre regiones revela las diferencias en colas entre los tres modelos. El modelo normal tiende a **subestimar** las colas, mientras que histograma y KDE capturan mejor los eventos extremos.
 
-*Interpretacion financiera.* La CML completa se obtiene combinando la solucion $\mathbf{w}^* = \mathbf{y}^*/t^*$ (portafolio tangente) con el activo libre de riesgo. Todo portafolio eficiente es una mezcla $\alpha \mathbf{w}^* + (1-\alpha) \mathbf{e}_{r_f}$ con $\alpha \in [0, +\infty)$, donde $\alpha > 1$ representa apalancamiento.
+### CML como SOCP (Boyd & Vandenberghe, 2004, §4.3.2)
 
-### Precio sombra de la restricción de riesgo = Sharpe ratio (Boyd & Vandenberghe, 2004, §5.6)
-
-**Teorema.** Considere el problema de maximizar rendimiento sujeto a una cota de riesgo:
-
-$$
-\max_{\mathbf{w}} \; \boldsymbol{\mu}^\top \mathbf{w} \quad \text{s.a.} \quad \sqrt{\mathbf{w}^\top \Sigma \mathbf{w}} \leq \sigma_{\max}, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
-$$
-
-Si $\lambda^*$ es el multiplicador dual optimo de la restriccion de riesgo, entonces:
+El problema de encontrar el portafolio tangente (máximo Sharpe) es una **programación fraccional**:
 
 $$
-\lambda^* = \frac{\partial \mu^*_p}{\partial \sigma_{\max}} = \frac{\mu_T - r_f}{\sigma_T} = \text{Sharpe ratio del portafolio tangente}
+\max_{\mathbf{w}} \quad \frac{\boldsymbol{\mu}^\top \mathbf{w} - r_f}{\sqrt{\mathbf{w}^\top \Sigma \mathbf{w}}}
 $$
 
-*Bosquejo de prueba.* Por el teorema de sensibilidad de Boyd & Vandenberghe (2004, §5.6.2), el multiplicador optimo $\lambda^*$ mide la tasa de cambio del valor optimo respecto a la perturbacion del lado derecho de la restriccion. En la frontera eficiente, $\mu^*_p(\sigma_{\max})$ es localmente lineal con pendiente $(\mu_T - r_f)/\sigma_T$ en la region de la CML. Por tanto, $\lambda^* = (\mu_T - r_f)/\sigma_T$. $\square$
+sujeto a:
 
-*Interpretacion financiera.* Este resultado conecta la teoria de dualidad con la medida de desempeno mas usada en la industria: cada unidad adicional de riesgo permitida genera exactamente un Sharpe ratio de rendimiento adicional. Si el Sharpe es 0.8, permitir 1% mas de volatilidad genera 0.8% mas de rendimiento esperado.
+$$
+\sum_i w_i = 1, \qquad w_i \geq 0
+$$
+
+Usando la **transformación de Charnes-Cooper** (y = w/κ), se convierte en un SOCP:
+
+$$
+\min_{\mathbf{y}, \kappa} \quad \left\| \Sigma^{1/2} \mathbf{y} \right\|_2
+$$
+
+sujeto a:
+
+$$
+(\boldsymbol{\mu} - r_f)^\top \mathbf{y} = 1, \qquad \sum_i y_i = \kappa, \qquad \mathbf{y} \geq 0
+$$
+
+y los pesos se recuperan como w* = y*/κ*. El SOCP es convexo y se resuelve eficientemente con solvers de punto interior.
+
+### Precio sombra del riesgo (Boyd & Vandenberghe, 2004, §5.6)
+
+En el problema donde se maximiza rendimiento sujeto a riesgo máximo, el multiplicador dual λ* de la restricción de riesgo coincide con el **ratio de Sharpe del portafolio tangente**. Esto da una interpretación precisa: el Sharpe mide la tasa marginal de sustitución entre rendimiento y riesgo en el óptimo.
+
+### Monte Carlo vs. Markowitz
+
+| Aspecto | Monte Carlo | Markowitz (CVXPY) |
+|---------|------------|-------------------|
+| **Resultado** | Nube de portafolios factibles | Frontera eficiente exacta |
+| **Óptimo** | Aproximado (mejor de N muestras) | Exacto (solución del QP) |
+| **Bono** | Incluido como activo adicional en Dirichlet | Incluido con Σ extendida |
+| **Visualización** | Scatter plot coloreado por Sharpe | Curva que envuelve la nube MC |
+
+---
+
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY](https://www.cvxpy.org/) | Optimización convexa (DCP) |
+| [sklearn.neighbors.KernelDensity](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KernelDensity.html) | KDE en scikit-learn |
+| [numpy.random.dirichlet](https://numpy.org/doc/stable/reference/random/generated/numpy.random.dirichlet.html) | Generación de pesos aleatorios |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 7** | Tres modelos de simulación (normal, histograma, KDE) |
+| **Clase 8** | Valuación MC de opciones con los mismos modelos |
+| **Clase 9** | Monte Carlo vs. Markowitz (sin bono) |
+| **Clase 10** | CML y activo libre de riesgo |
+| **Clase 11** | Frontera eficiente con portfolio_func.py |
 
 ---
 
@@ -55,10 +100,12 @@ $$
 
 ### Textos principales
 
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3.2 (SOCP y CML), §5.6 (precios sombra).
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3.2 (SOCP/CML), §5.6 (precios sombra).
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer.
-- **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
+- **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6–8.
 - **Markowitz, H.** (1952). Portfolio Selection. *The Journal of Finance*, 7(1), 77–91.
+- **Sharpe, W. F.** (1964). Capital Asset Prices. *The Journal of Finance*, 19(3), 425–442.
+- **Tobin, J.** (1958). Liquidity Preference as Behavior Towards Risk. *The Review of Economic Studies*, 25(2), 65–86.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning.
 
 ---
