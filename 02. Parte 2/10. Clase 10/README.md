@@ -61,7 +61,50 @@ $$
 
 ### Extensión de la covarianza
 
-La matriz de covarianza se extiende con una fila/columna de ceros para el bono (varianza = 0, covarianza = 0 con todos los activos).
+La matriz de covarianza se extiende con una fila/columna de ceros para el bono (varianza = 0, covarianza = 0 con todos los activos):
+
+$$
+\Sigma_{\text{ext}} = \begin{pmatrix} \Sigma_{\text{acciones}} & \mathbf{0} \\ \mathbf{0}^\top & 0 \end{pmatrix}
+$$
+
+### Teorema de separación (Tobin, 1958)
+
+Todos los inversionistas, independientemente de su aversión al riesgo, mantienen la **misma combinación de activos riesgosos** (el portafolio tangente T). Solo varía la proporción asignada al bono:
+
+- **Conservador**: $w_0 > 0.5$ (más bono, menos riesgo)
+- **Agresivo**: $w_0 \approx 0$ (todo en T)
+- **Apalancado**: $w_0 < 0$ (pide prestado a tasa $r_f$ para invertir más en T)
+
+### Derivación de la CML
+
+Un portafolio con proporción $w_0$ en el bono y $(1 - w_0)$ en el tangente T tiene:
+
+$$
+\mu_p = w_0 \, r_f + (1 - w_0) \, \mu_T, \qquad \sigma_p = |1 - w_0| \, \sigma_T
+$$
+
+Eliminando $w_0$: $\mu_p = r_f + \frac{\mu_T - r_f}{\sigma_T} \sigma_p$, que es la ecuación de la CML con pendiente igual al Sharpe del tangente.
+
+---
+
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY](https://www.cvxpy.org/) | Optimización convexa (DCP) |
+| [sklearn.covariance.LedoitWolf](https://scikit-learn.org/stable/modules/generated/sklearn.covariance.LedoitWolf.html) | Covarianza robusta |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 4** | Frontera eficiente sin bono (Markowitz clásico) |
+| **Clase 5** | Covarianza robusta (Ledoit-Wolf) |
+| **Clase 9** | Monte Carlo vs. Markowitz (sin bono) |
+| **Clase 11** | Frontera eficiente con funciones reutilizables |
+| **Clase 13** | Comparación MC vs Markowitz con bono |
 
 ---
 
@@ -73,6 +116,7 @@ La matriz de covarianza se extiende con una fila/columna de ceros para el bono (
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6: Mean-Variance Portfolio Theory.
 - **Sharpe, W. F.** (1964). Capital Asset Prices. *The Journal of Finance*, 19(3), 425–442.
+- **Tobin, J.** (1958). Liquidity Preference as Behavior Towards Risk. *The Review of Economic Studies*, 25(2), 65–86.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning.
 
 ---
