@@ -1,4 +1,4 @@
-# Clase 15 — Programación estocástica con Pyomo y CVXPY
+# Clase 15 — Optimización convexa (CVXPY) y programación estocástica (Pyomo)
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jdsanch1/simrc/blob/master/02.%20Parte%202/15.%20Clase%2015/13Class%20NB.ipynb)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jdsanch1/SimRC/master?labpath=02.%20Parte%202%2F15.%20Clase%2015%2F13Class%20NB.ipynb)
@@ -7,7 +7,7 @@
 
 ## Objetivo
 
-Combinar **CVXPY** (optimización convexa) y **Pyomo** (programación matemática general) para resolver problemas de optimización bajo incertidumbre: portafolios con restricciones de riesgo y problemas de planificación con variables enteras.
+Combinar CVXPY (optimización convexa) y Pyomo (programación matemática general) para resolver problemas financieros y de planificación bajo incertidumbre. Esta clase es la síntesis final del curso.
 
 ---
 
@@ -17,72 +17,148 @@ Combinar **CVXPY** (optimización convexa) y **Pyomo** (programación matemátic
 
 | Característica | CVXPY | Pyomo |
 |---------------|-------|-------|
-| Enfoque | Optimización convexa — DCP (Boyd & Vandenberghe, 2004, §4.1) | Programación matemática general |
-| Variables | Continuas | Continuas, enteras, binarias |
-| Verificación | Automática (convexidad) | No verifica convexidad (los problemas con variables enteras no son convexos; Boyd & Vandenberghe, 2004, §4.1.3) |
-| Uso ideal | Portafolios, regresión | MILP, scheduling, dieta |
+| **Enfoque** | Optimización convexa (DCP) | Programación matemática general |
+| **Variables** | Continuas | Continuas, enteras, binarias |
+| **Verificación** | Automática (convexidad) | No verifica convexidad |
+| **Complejidad** | Polinomial (punto interior, Boyd §11.1) | NP-hard para enteros (branch-and-bound) |
+| **Uso ideal** | Portafolios, regresión, SVM | MILP, scheduling, dieta |
 
-### Problema de portafolio con restricción de riesgo (CVXPY)
+### Portafolio con restricción de riesgo (QCQP)
 
-$$
-\max_{\mathbf{w}} \quad \boldsymbol{\mu}^\top \mathbf{w} \qquad \text{s.a.} \quad \mathbf{w}^\top Q \mathbf{w} \leq \text{max\_risk}, \quad \sum w_i = 1, \quad w \geq 0
-$$
-
-Este es un QCQP convexo (Boyd & Vandenberghe, 2004, §4.6).
-
-#### Optimización robusta bajo incertidumbre elipsoidal (Boyd & Vandenberghe, 2004, §7.1)
-
-**Teorema.** Cuando la matriz de covarianza es incierta y pertenece a un **conjunto de incertidumbre elipsoidal** $\mathcal{U} = \{\Sigma_0 + \sum_{i=1}^{L} u_i \Sigma_i : \|\mathbf{u}\|_2 \leq 1\}$, el problema de peor caso:
+El problema de maximizar rendimiento sujeto a un riesgo máximo es un QCQP (Boyd §4.4.2):
 
 $$
-\min_{\mathbf{w}} \max_{\Sigma \in \mathcal{U}} \; \mathbf{w}^\top \Sigma \mathbf{w} \quad \text{s.a.} \quad \boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+\max_{\mathbf{w}} \quad \boldsymbol{\mu}^\top \mathbf{w}
 $$
 
-se reformula como un **SOCP**:
+sujeto a:
 
 $$
-\min_{\mathbf{w}, t} \; t \quad \text{s.a.} \quad \mathbf{w}^\top \Sigma_0 \mathbf{w} + \left\| \begin{pmatrix} \mathbf{w}^\top \Sigma_1 \mathbf{w} \\ \vdots \\ \mathbf{w}^\top \Sigma_L \mathbf{w} \end{pmatrix} \right\|_2 \leq t, \quad \boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+\mathbf{w}^\top \Sigma \, \mathbf{w} \leq \sigma_{\max}^2, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
 $$
 
-*Bosquejo de prueba.* El maximo interno $\max_{\|\mathbf{u}\|_2 \leq 1} \mathbf{w}^\top (\Sigma_0 + \sum_i u_i \Sigma_i) \mathbf{w}$ se evalua por Cauchy-Schwarz: $\max_{\|\mathbf{u}\| \leq 1} \mathbf{a}^\top \mathbf{u} = \|\mathbf{a}\|_2$ donde $a_i = \mathbf{w}^\top \Sigma_i \mathbf{w}$. El resultado es $\mathbf{w}^\top \Sigma_0 \mathbf{w} + \|\mathbf{a}\|_2$, que es convexo en $\mathbf{w}$ (composicion de funciones convexas con norma, Boyd & Vandenberghe, 2004, §3.2.4). La restriccion epigrafal $\leq t$ lo convierte en SOCP. $\square$
+La restricción de riesgo define un **elipsoide** en el espacio de pesos — un conjunto convexo cuando Σ es PSD.
 
-*Interpretacion financiera.* Este enfoque protege al inversionista contra errores de estimacion en la covarianza. En la practica, se calibra el radio de incertidumbre $\rho$ (reemplazando $\|\mathbf{u}\|_2 \leq 1$ por $\|\mathbf{u}\|_2 \leq \rho$) usando bootstrapping o intervalos de confianza sobre la covarianza muestral. CVXPY resuelve este SOCP directamente.
+### Optimización robusta (SOCP)
 
-#### Superficie de Pareto para 3+ objetivos (Boyd & Vandenberghe, 2004, §4.7.5, §6.5)
-
-**Definicion.** Cuando hay $K \geq 3$ objetivos en conflicto (e.g., rendimiento, riesgo, liquidez), una solucion $\mathbf{w}^*$ es **Pareto-optima** si no existe $\mathbf{w}$ factible tal que $f_k(\mathbf{w}) \leq f_k(\mathbf{w}^*)$ para todo $k$ con al menos una desigualdad estricta.
-
-**Metodo de escalarizacion.** La superficie de Pareto se traza resolviendo la familia parametrica:
+Cuando los rendimientos esperados μ son inciertos y pueden variar dentro de un elipsoide de radio ρ centrado en la estimación:
 
 $$
-\min_{\mathbf{w}} \; \lambda_1 \mathbf{w}^\top \Sigma \mathbf{w} - \lambda_2 \boldsymbol{\mu}^\top \mathbf{w} + \lambda_3 \|\mathbf{w}\|_1 \quad \text{s.a.} \quad \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+\boldsymbol{\mu} \in \mathcal{U} = \{\hat{\boldsymbol{\mu}} + \rho \, \mathbf{u} : \|\mathbf{u}\|_2 \leq 1\}
 $$
 
-donde $\lambda_1, \lambda_2, \lambda_3 \geq 0$ con $\lambda_1 + \lambda_2 + \lambda_3 = 1$ ponderan riesgo, rendimiento negativo, y concentracion (proxy de iliquidez). Variando $(\lambda_1, \lambda_2, \lambda_3)$ sobre el simplex unitario se obtiene la **superficie de Pareto** (Boyd & Vandenberghe, 2004, §4.7.5).
-
-*Interpretacion financiera.* Cada punto de la superficie representa un trade-off diferente entre los tres criterios. El comite de inversiones elige el punto que mejor refleja su mandato: un fondo de pensiones ponderara mas $\lambda_1$ (riesgo bajo), mientras que un hedge fund ponderara mas $\lambda_2$ (rendimiento alto).
-
-#### NP-dureza de programacion entera (Boyd & Vandenberghe, 2004, §4.1.3)
-
-**Resultado.** Los problemas de optimizacion con variables enteras ($x \in \mathbb{Z}^n$) son en general **NP-duros**: no se conoce algoritmo de tiempo polinomial para resolverlos. Esto contrasta fundamentalmente con la optimizacion convexa continua, que se resuelve en tiempo polinomial (Boyd & Vandenberghe, 2004, §1.3.2).
-
-*Bosquejo de prueba.* El problema de satisfacibilidad booleana (SAT), que es NP-completo, se reduce en tiempo polinomial a un programa lineal entero binario: cada clausula $(x_i \lor \bar{x}_j \lor x_k)$ se codifica como $x_i + (1-x_j) + x_k \geq 1$ con $x \in \{0,1\}^n$ (Boyd & Vandenberghe, 2004, §4.1.3). $\square$
-
-*Consecuencia practica para la eleccion de herramienta:*
-
-| Tipo de problema | Herramienta | Complejidad |
-|-----------------|------------|-------------|
-| QP / SOCP / SDP (convexo continuo) | **CVXPY** | Polinomial — $O(n^{3.5})$ |
-| MILP / MIP (enteros mixtos) | **Pyomo** + CBC/Gurobi | NP-duro — branch-and-bound exponencial en peor caso |
-| MINLP (no lineal + enteros) | **Pyomo** + BONMIN | NP-duro — aun mas costoso |
-
-Esto explica la division de trabajo en el curso: CVXPY para problemas de portafolios (convexos continuos) y Pyomo para problemas de planificacion con variables discretas (dieta, scheduling, seleccion de activos con cardinalidad).
-
-### Problema de dieta (Pyomo — MILP)
+el peor caso para el rendimiento es:
 
 $$
-\min_{\mathbf{x}} \quad \mathbf{c}^\top \mathbf{x} \qquad \text{s.a.} \quad N^{\min} \leq A\mathbf{x} \leq N^{\max}, \quad \mathbf{x} \in \mathbb{Z}_{\geq 0}
+\min_{\boldsymbol{\mu} \in \mathcal{U}} \boldsymbol{\mu}^\top \mathbf{w} = \hat{\boldsymbol{\mu}}^\top \mathbf{w} - \rho \|\mathbf{w}\|_2
 $$
+
+El problema robusto se convierte en un **SOCP** (Boyd §7.1):
+
+$$
+\max_{\mathbf{w}} \quad \hat{\boldsymbol{\mu}}^\top \mathbf{w} - \rho \|\mathbf{w}\|_2
+$$
+
+sujeto a:
+
+$$
+\sum_i w_i = 1, \qquad w_i \geq 0
+$$
+
+A medida que ρ crece, los pesos convergen al portafolio de mínima varianza — la incertidumbre fuerza la diversificación.
+
+### Problema de dieta (MILP con Pyomo)
+
+El problema clásico de dieta minimiza costo sujeto a requerimientos nutricionales:
+
+$$
+\min_{\mathbf{x}} \quad \mathbf{c}^\top \mathbf{x}
+$$
+
+sujeto a:
+
+$$
+\mathbf{N}^{\min} \leq A\mathbf{x} \leq \mathbf{N}^{\max}, \qquad \sum_i V_i x_i \leq V^{\max}, \qquad x_i \in \mathbb{Z}_{\geq 0}
+$$
+
+Las variables enteras hacen que el problema sea NP-hard (Boyd §4.1.3). CVXPY rechazaría este problema; Pyomo lo resuelve con branch-and-bound (GLPK).
+
+### Convexo vs. entero: por qué importa la distinción
+
+| Propiedad | Problema convexo | Problema entero |
+|-----------|:---:|:---:|
+| Mínimo local = global | **Sí** | No |
+| Soluble en tiempo polinomial | **Sí** | No (NP-hard) |
+| Dualidad fuerte | **Sí** (Slater) | No en general |
+| CVXPY puede resolverlo | **Sí** | No |
+| Pyomo puede resolverlo | Sí | **Sí** |
+
+---
+
+## Resumen del curso completo
+
+### Mapa de herramientas por clase
+
+| Problema | Herramienta | Clases | Tipo Boyd |
+|----------|-------------|:------:|-----------|
+| Frontera eficiente | CVXPY | 4, 11 | QP (§4.4) |
+| Max Sharpe (Charnes-Cooper) | CVXPY | 4, 9, 10 | QP (§4.3.2) |
+| Portafolio con riesgo | CVXPY | 15 | QCQP (§4.4.2) |
+| Portafolio robusto | CVXPY | 15 | SOCP (§7.1) |
+| Regularización L₂/L₁ | CVXPY | 12 | QP (§6.3) |
+| Tracking error | CVXPY | 12 | SOCP (§4.3.1) |
+| Opciones barrera | Monte Carlo | 14 | No convexo |
+| Dieta (enteros) | Pyomo | 15 | MILP |
+
+### Flujo completo
+
+```
+Datos (yfinance)
+  → Rendimientos logarítmicos
+    → Estimadores robustos (Huber μ, Ledoit-Wolf Σ)
+      → Simulación Monte Carlo
+      │   ├── Portafolios (Clase 9)
+      │   ├── Valuación de opciones (Clase 8)
+      │   └── Opciones barrera (Clase 14)
+      │
+      → Optimización convexa (CVXPY/DCP)
+      │   ├── QP: frontera eficiente (Clase 4, 11)
+      │   ├── QCQP: restricción de riesgo (Clase 15)
+      │   ├── SOCP: tracking error, robusta, CML (Clase 10, 12, 15)
+      │   └── Charnes-Cooper: max Sharpe (Clase 4, 9, 10)
+      │
+      → Programación entera (Pyomo)
+          └── MILP: problema de dieta (Clase 15)
+```
+
+---
+
+## Recursos adicionales
+
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [CVXPY](https://www.cvxpy.org/) | Optimización convexa (DCP) |
+| [Pyomo](https://www.pyomo.org/) | Programación matemática general |
+| [Boyd cvxbook (PDF)](https://web.stanford.edu/~boyd/cvxbook/) | Libro completo gratuito |
+| [GLPK](https://www.gnu.org/software/glpk/) | Solver para MILP |
+
+### Conexión con todas las clases
+
+| Clase | Tema | Conexión con Clase 15 |
+|:-----:|------|----------------------|
+| 1–2 | Datos, rendimientos, covarianza | Insumos para optimización |
+| 3 | Opciones (payoff convexo) | Convexidad de max(S-K,0) (Boyd §3.2.3) |
+| 4 | Sharpe, frontera eficiente | QP de Markowitz (Boyd §4.4) |
+| 5 | Shrunk Covariance | Regularización (Boyd §6.3) |
+| 6 | Huber | Penalización robusta (Boyd §6.1.2) |
+| 7 | VaR/CVaR | SOCP para CVaR (Boyd §4.3.2) |
+| 8 | Valuación MC opciones | Convergencia 1/√N |
+| 9–11 | MC vs Markowitz | CVXPY > MC para óptimos exactos |
+| 12 | Regularización L₁/L₂ | Estabilización de pesos (Boyd §6.3) |
+| 13 | Portafolio con bono | CML como SOCP |
+| 14 | Opciones barrera | Límite de convexidad (Boyd §3.2) |
 
 ---
 
@@ -90,10 +166,12 @@ $$
 
 ### Textos principales
 
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.1 (formulación general), §4.6 (QCQP), §6.5 (multi-objetivo), §7.1 (estimación bajo incertidumbre).
 - **Birge, J. R. & Louveaux, F.** (2011). *Introduction to Stochastic Programming* (2nd ed.). Springer.
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.1.3, §4.4.2, §4.6, §6.5, §7.1, §11.1.
+- **Charnes, A. & Cooper, W. W.** (1962). Programming with linear fractional functionals. *Naval Research Logistics Quarterly*, 9(3–4), 181–186.
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
+- **Markowitz, H.** (1952). Portfolio Selection. *The Journal of Finance*, 7(1), 77–91.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning.
 
 ---
