@@ -50,7 +50,27 @@ $$
 \text{Payoff} = \max(K - S_T, \ 0)
 $$
 
-Nótese que la función $\max(x, 0)$ es convexa y no decreciente (Boyd & Vandenberghe, 2004, §3.2.3), por lo que el payoff de una opción es una función convexa de $S_T$.
+**Proposición (Convexidad de $\max(x,0)$, Boyd §3.2.3).** La función $f(x) = \max(x, 0)$ (también llamada *parte positiva* o ReLU) es convexa y no decreciente.
+
+*Prueba.* Sean $x, y \in \mathbb{R}$ y $\theta \in [0,1]$. Entonces:
+
+$$
+f(\theta x + (1-\theta)y) = \max(\theta x + (1-\theta)y, \; 0) \leq \max(\theta x, 0) + \max((1-\theta)y, 0) = \theta\max(x,0) + (1-\theta)\max(y,0)
+$$
+
+donde la desigualdad usa la subaditividad de $\max(\cdot, 0)$. Equivalentemente, $f$ es el supremo de las funciones afines $\{x, 0\}$, y el supremo de funciones convexas es convexo (Boyd §3.2.3). $\blacksquare$
+
+**Teorema (Regla de composición, Boyd §3.2.4).** Si $h: \mathbb{R}^n \to \mathbb{R}$ es convexa y $g: \mathbb{R} \to \mathbb{R}$ es convexa y no decreciente, entonces $f = g \circ h$ es convexa.
+
+*Aplicación al payoff de opciones.* El payoff de una call es $\max(S_T - K, 0) = g(h(S_T))$ donde $h(S_T) = S_T - K$ es afín (por tanto convexa) y $g(x) = \max(x,0)$ es convexa y no decreciente. Por la regla de composición, el payoff es convexo en $S_T$.
+
+**Consecuencia (Desigualdad de Jensen para opciones).** Como $\max(S_T - K, 0)$ es convexa en $S_T$ y la desigualdad de Jensen establece que $\mathbb{E}[g(X)] \geq g(\mathbb{E}[X])$ para $g$ convexa:
+
+$$
+\mathbb{E}[\max(S_T - K, 0)] \geq \max(\mathbb{E}[S_T] - K, 0)
+$$
+
+Esto implica que el precio de una call (descontado) es siempre mayor o igual al valor intrínseco evaluado en el precio forward. La incertidumbre *incrementa* el valor de la opción -- esta es la esencia del **valor temporal**: a mayor volatilidad, mayor precio de la opción.
 
 ### Moneyness
 

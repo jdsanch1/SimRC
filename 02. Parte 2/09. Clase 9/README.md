@@ -25,6 +25,46 @@ Se generan N portafolios con pesos aleatorios (distribución de Dirichlet) y se 
 | Markowitz (QP) | Encuentra el óptimo exacto (Boyd & Vandenberghe, 2004, §4.4) | Sensible a errores de estimación |
 | MC + estimadores robustos | Explora con parámetros estables | No garantiza optimalidad |
 
+#### Preservacion de convexidad bajo restricciones lineales (Boyd & Vandenberghe, 2004, §4.4)
+
+**Teorema (QP con restricciones lineales).** Sea $f(\mathbf{w}) = \mathbf{w}^\top \Sigma \mathbf{w}$ con $\Sigma \succeq 0$. El problema
+
+$$
+\min_{\mathbf{w}} \; \mathbf{w}^\top \Sigma \mathbf{w} \quad \text{s.a.} \quad A\mathbf{w} = b, \; G\mathbf{w} \leq h
+$$
+
+es un QP convexo. La interseccion de un numero finito de semiespacios y planos (restricciones lineales) es un **poliedro**, que es un conjunto convexo. Como la funcion objetivo es cuadratica convexa y el dominio factible es convexo, el problema global es convexo y todo minimo local es global.
+
+*Bosquejo de prueba.* Un semiplano $\{w : g_i^\top w \leq h_i\}$ es convexo (la desigualdad preserva convexidad al ser $g_i^\top w$ afin). La interseccion finita de conjuntos convexos es convexa. La composicion de una funcion convexa sobre un dominio convexo da un programa convexo (Boyd & Vandenberghe, 2004, Prop. 4.2.1). $\square$
+
+*Interpretacion financiera.* Las restricciones tipicas de portafolios son lineales y por tanto preservan la convexidad del QP de Markowitz:
+
+| Restriccion | Formulacion | Tipo |
+|-------------|------------|------|
+| Limites sectoriales | $\sum_{i \in S_k} w_i \leq u_k$ | Desigualdad lineal |
+| Posicion maxima | $w_i \leq w_{\max}$ | Cota superior |
+| Turnover | $\sum_i |w_i - w_i^{(\text{prev})}| \leq \tau$ (se linealiza con variables auxiliares) | Desigualdad lineal |
+
+#### QCQP para tracking error (Boyd & Vandenberghe, 2004, §4.6)
+
+Cuando se agrega una restriccion de tracking error respecto a un benchmark $\mathbf{b}$, el problema se convierte en un **QCQP** (Quadratically Constrained Quadratic Program):
+
+$$
+\min_{\mathbf{w}} \; \mathbf{w}^\top \Sigma \mathbf{w} \quad \text{s.a.} \quad (\mathbf{w} - \mathbf{b})^\top \Sigma (\mathbf{w} - \mathbf{b}) \leq \mathrm{TE}_{\max}^2, \quad \mathbf{1}^\top \mathbf{w} = 1, \quad \mathbf{w} \geq 0
+$$
+
+Este problema es convexo porque cada restriccion cuadratica $f_i(\mathbf{w}) = \mathbf{w}^\top P_i \mathbf{w} + q_i^\top \mathbf{w} + r_i \leq 0$ define un conjunto convexo cuando $P_i \succeq 0$ (el conjunto subnivel de una funcion convexa es convexo, Boyd & Vandenberghe, 2004, §3.1.6). Aqui $P_i = \Sigma \succeq 0$, asi que la restriccion de tracking error es convexa.
+
+#### Metodos de punto interior (Boyd & Vandenberghe, 2004, §11.1)
+
+Los solvers que usa CVXPY (ECOS, SCS, MOSEK) implementan **metodos de punto interior**. La idea central es reemplazar las restricciones de desigualdad por una **funcion barrera logaritmica**:
+
+$$
+\min_{\mathbf{w}} \; t \cdot f_0(\mathbf{w}) - \sum_{i=1}^{m} \log(-f_i(\mathbf{w}))
+$$
+
+donde $f_i(\mathbf{w}) \leq 0$ son las restricciones y $t > 0$ es un parametro que crece iterativamente. Cuando $t \to \infty$, la barrera penaliza infinitamente las violaciones de restricciones, y la solucion converge al optimo del problema original. La complejidad es $O(\sqrt{m} \log(1/\epsilon))$ iteraciones de Newton, cada una con costo $O(n^3)$, dando complejidad total $O(n^{3.5})$ para QPs tipicos. Esto explica por que los solvers resuelven portafolios con cientos de activos en fracciones de segundo.
+
 ---
 
 ## Referencias bibliográficas

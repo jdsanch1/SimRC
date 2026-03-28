@@ -55,6 +55,18 @@ donde r\_f es la tasa libre de riesgo.
 | S > 2 | Excelente |
 | S < 0 | El portafolio rinde menos que la tasa libre de riesgo |
 
+**Definición (Cuasi-convexidad, Boyd §3.4).** Una función $f: \mathbb{R}^n \to \mathbb{R}$ es **cuasi-convexa** si sus conjuntos de subnivel $S_\alpha = \{x \mid f(x) \leq \alpha\}$ son convexos para todo $\alpha$. Es **cuasi-cóncava** si $-f$ es cuasi-convexa, equivalentemente si los conjuntos de supernivel $\{x \mid f(x) \geq \alpha\}$ son convexos.
+
+El ratio de Sharpe $S(\mathbf{w}) = \frac{\boldsymbol{\mu}^\top\mathbf{w} - r_f}{\sqrt{\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}}}$ es **cuasi-cóncavo** en $\mathbf{w}$ (para $\boldsymbol{\mu}^\top\mathbf{w} > r_f$): es el cociente de una función afín (cóncava) y una convexa positiva ($\sigma_p$). Los conjuntos de supernivel $\{w \mid S(w) \geq \alpha\}$ son convexos (intersección de un semiplano afín y una restricción cónica), lo que garantiza que el máximo global es único.
+
+**Transformación de Charnes-Cooper (Boyd §4.3.2).** Como $S(\mathbf{w})$ es cuasi-cóncavo pero no cóncavo, no se puede maximizar directamente con DCP. La transformación consiste en el cambio de variable $\mathbf{y} = \mathbf{w}/\kappa$ donde $\kappa = 1/(\boldsymbol{\mu}^\top\mathbf{w} - r_f) > 0$. El problema equivalente es:
+
+$$
+\min_{\mathbf{y},\kappa} \; \mathbf{y}^\top\boldsymbol{\Sigma}\,\mathbf{y} \quad \text{s.a.} \quad (\boldsymbol{\mu} - r_f\mathbf{1})^\top\mathbf{y} = 1, \; \mathbf{1}^\top\mathbf{y} = \kappa, \; \mathbf{y} \geq 0, \; \kappa > 0
+$$
+
+y los pesos óptimos se recuperan como $\mathbf{w}^* = \mathbf{y}^*/\kappa^*$. Este es un QP convexo estándar.
+
 ### Portafolio tangente
 
 El portafolio que **maximiza el ratio de Sharpe** se llama **portafolio tangente**. Geométricamente, es el punto de la frontera eficiente donde la línea desde la tasa libre de riesgo es tangente a la frontera.
@@ -81,7 +93,42 @@ $$
 \boldsymbol{\mu}^\top \mathbf{w} = \mu^*, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
 $$
 
-Este es un **problema cuadrático convexo** (QP): objetivo cuadrático convexo con restricciones lineales (Boyd & Vandenberghe, 2004, §4.4), que tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$. La frontera resultante es una curva paramétrica cuya función de valor óptimo $p^*(\mu^*)$ es convexa (Boyd & Vandenberghe, 2004, §4.7.3), lo que garantiza suavidad y continuidad.
+Este es un **problema cuadrático convexo** (QP).
+
+**Definición (Programa cuadrático, Boyd §4.4).** Un QP tiene la forma estándar:
+
+$$
+\min_{\mathbf{x}} \; \frac{1}{2}\mathbf{x}^\top P\,\mathbf{x} + \mathbf{q}^\top\mathbf{x} \quad \text{s.a.} \quad G\mathbf{x} \leq \mathbf{h}, \; A\mathbf{x} = \mathbf{b}
+$$
+
+con $P \succeq 0$. Para el problema de Markowitz:
+
+| Elemento QP | Correspondencia Markowitz |
+|---|---|
+| $\mathbf{x}$ | Vector de pesos $\mathbf{w}$ |
+| $P$ | $2\boldsymbol{\Sigma}$ (matriz de covarianza) |
+| $\mathbf{q}$ | $\mathbf{0}$ (sin término lineal en el objetivo) |
+| $G$ | $-\mathbf{I}_n$ (restricciones $w_i \geq 0$) |
+| $\mathbf{h}$ | $\mathbf{0}$ |
+| $A$ | $\begin{pmatrix} \boldsymbol{\mu}^\top \\ \mathbf{1}^\top \end{pmatrix}$ (rendimiento objetivo + pesos suman 1) |
+| $\mathbf{b}$ | $\begin{pmatrix} \mu^* \\ 1 \end{pmatrix}$ |
+
+**Reglas de verificación DCP (Boyd §3.2).** CVXPY valida convexidad mediante reglas composicionales:
+
+| Regla | Ejemplo en Markowitz |
+|---|---|
+| Suma de convexas es convexa | $\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}$ es convexa (forma cuadrática con $\boldsymbol{\Sigma} \succeq 0$) |
+| Función afín es convexa y cóncava | $\boldsymbol{\mu}^\top\mathbf{w}$, $\sum w_i$ |
+| Restricción afín = 0 es válida | $\boldsymbol{\mu}^\top\mathbf{w} = \mu^*$ |
+| Restricción afín $\leq$ 0 es válida | $-w_i \leq 0$ |
+
+El QP tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$.
+
+**Teorema (Optimización paramétrica, Boyd §5.6.1).** Sea $p^*(\mu^*)$ la función de valor óptimo del QP de Markowitz parametrizada por el rendimiento objetivo $\mu^*$. Entonces $p^*(\mu^*)$ es convexa en $\mu^*$.
+
+*Prueba (esquema).* El conjunto factible se contrae cuando se impone una restricción más estricta sobre $\mu^*$. Formalmente, $p^*(\mu^*) = \inf_{\mathbf{w} \in \mathcal{F}(\mu^*)} \mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w}$ donde $\mathcal{F}(\mu^*) = \{\mathbf{w} \mid \boldsymbol{\mu}^\top\mathbf{w} = \mu^*, \sum w_i = 1, w_i \geq 0\}$. Para $\theta \in [0,1]$, los portafolios factibles para $\theta\mu_1^* + (1-\theta)\mu_2^*$ contienen las combinaciones convexas de los factibles para $\mu_1^*$ y $\mu_2^*$, y por convexidad de la forma cuadrática se obtiene $p^*(\theta\mu_1^*+(1-\theta)\mu_2^*) \leq \theta p^*(\mu_1^*) + (1-\theta) p^*(\mu_2^*)$. $\blacksquare$
+
+*Interpretación financiera*: la frontera eficiente en el espacio $(\sigma_p^2, \mu_p)$ es una curva convexa. Esto garantiza suavidad y continuidad: no hay "saltos" en la frontera, y el tradeoff riesgo-rendimiento se encarece de forma creciente.
 
 ### Portafolio de mínima varianza (MVP)
 

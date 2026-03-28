@@ -260,7 +260,27 @@ $$
 \sigma_p^2 = \mathbf{w}^\top \boldsymbol{\Sigma} \, \mathbf{w}
 $$
 
-donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vector de pesos. Esta expresión es una **forma cuadrática** que resulta convexa cuando $\boldsymbol{\Sigma}$ es semidefinida positiva (Boyd & Vandenberghe, 2004, §3.1.5), propiedad fundamental para la optimización de portafolios. Además, el conjunto de portafolios factibles (pesos no negativos que suman 1) forma un **simplex**, que es un conjunto convexo (Boyd & Vandenberghe, 2004, §2.1–2.2).
+donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vector de pesos.
+
+**Definición (Conjunto convexo, Boyd §2.1).** Un conjunto $C \subseteq \mathbb{R}^n$ es **convexo** si para cualesquiera $\mathbf{x}, \mathbf{y} \in C$ y $\theta \in [0,1]$:
+
+$$
+\theta \, \mathbf{x} + (1 - \theta)\, \mathbf{y} \in C
+$$
+
+El conjunto de portafolios factibles con pesos no negativos que suman uno es el **simplex estándar**:
+
+$$
+\Delta_n = \left\{ \mathbf{w} \in \mathbb{R}^n \;\middle|\; \sum_{i=1}^{n} w_i = 1, \; w_i \geq 0 \right\}
+$$
+
+*Prueba de que $\Delta_n$ es convexo.* Sean $\mathbf{w}, \mathbf{v} \in \Delta_n$ y $\theta \in [0,1]$. Definamos $\mathbf{z} = \theta \mathbf{w} + (1-\theta)\mathbf{v}$. Entonces $z_i = \theta w_i + (1-\theta)v_i \geq 0$ (combinación convexa de no negativos) y $\sum_i z_i = \theta \sum_i w_i + (1-\theta)\sum_i v_i = \theta + (1-\theta) = 1$. Por tanto $\mathbf{z} \in \Delta_n$. $\blacksquare$
+
+*Interpretación financiera*: cualquier mezcla de dos portafolios factibles es también un portafolio factible, lo que permite interpolar suavemente entre estrategias.
+
+**Definición (Norma, Boyd §A.1).** Una **norma** en $\mathbb{R}^n$ es una función $\|\cdot\| : \mathbb{R}^n \to \mathbb{R}$ que satisface: (i) $\|\mathbf{x}\| \geq 0$ con igualdad ssi $\mathbf{x} = \mathbf{0}$, (ii) $\|t\mathbf{x}\| = |t|\|\mathbf{x}\|$, (iii) $\|\mathbf{x}+\mathbf{y}\| \leq \|\mathbf{x}\|+\|\mathbf{y}\|$. La volatilidad $\sigma_p = \sqrt{\mathbf{w}^\top \boldsymbol{\Sigma}\,\mathbf{w}}$ es la norma $L_2$ del vector de rendimientos del portafolio ponderada por $\boldsymbol{\Sigma}^{1/2}$, es decir $\sigma_p = \|\boldsymbol{\Sigma}^{1/2}\mathbf{w}\|_2$.
+
+La expresión $\sigma_p^2 = \mathbf{w}^\top \boldsymbol{\Sigma}\,\mathbf{w}$ es una **forma cuadrática** que resulta convexa cuando $\boldsymbol{\Sigma}$ es semidefinida positiva ($\boldsymbol{\Sigma} \succeq 0$) (Boyd & Vandenberghe, 2004, §3.1.5). Intuitivamente, esto significa que la varianza del portafolio no tiene mínimos locales falsos: todo mínimo local es global, propiedad fundamental para la optimización de portafolios. La demostración completa se presenta en la Clase 2.
 
 ---
 

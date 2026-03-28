@@ -48,6 +48,24 @@ Para $n$ activos, $\boldsymbol{\Sigma}$ es una matriz $n \times n$ con las sigui
 - **Simétrica**: $\sigma_{ij} = \sigma_{ji}$
 - **Semidefinida positiva** (SDP): $\mathbf{x}^\top \boldsymbol{\Sigma} \, \mathbf{x} \geq 0$ para todo $\mathbf{x}$, es decir, $\boldsymbol{\Sigma}$ pertenece al cono de matrices semidefinidas positivas $\mathcal{S}^+_n$ (Boyd & Vandenberghe, 2004, §2.4)
 
+**Definición (Matriz semidefinida positiva, Boyd §A.4).** Una matriz simétrica $A \in \mathbb{R}^{n \times n}$ es **semidefinida positiva** ($A \succeq 0$) si y solo si se cumple cualquiera de las siguientes condiciones equivalentes:
+
+1. $\mathbf{x}^\top A \, \mathbf{x} \geq 0$ para todo $\mathbf{x} \in \mathbb{R}^n$.
+2. Todos los eigenvalores de $A$ son no negativos: $\lambda_i(A) \geq 0$ para $i = 1, \ldots, n$.
+3. Existe una matriz $B$ tal que $A = B^\top B$ (factorización de Cholesky generalizada).
+
+*Prueba de la equivalencia 1 $\Leftrightarrow$ 2 (vía descomposición espectral).* Toda matriz simétrica admite la descomposición $A = Q \Lambda Q^\top$ donde $Q$ es ortogonal y $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$. Sea $\mathbf{y} = Q^\top \mathbf{x}$; entonces $\mathbf{x}^\top A \, \mathbf{x} = \mathbf{y}^\top \Lambda \, \mathbf{y} = \sum_{i=1}^n \lambda_i y_i^2$. Esta suma es $\geq 0$ para todo $\mathbf{y}$ si y solo si cada $\lambda_i \geq 0$. $\blacksquare$
+
+*Interpretación financiera*: los eigenvalores de $\boldsymbol{\Sigma}$ son las varianzas de los componentes principales. La condición $\boldsymbol{\Sigma} \succeq 0$ garantiza que ninguna combinación lineal de activos tenga varianza negativa, lo cual es físicamente necesario.
+
+**Proposición (Convexidad de la forma cuadrática, Boyd §3.1.5).** Si $\boldsymbol{\Sigma} \succeq 0$, la función $f(\mathbf{w}) = \mathbf{w}^\top \boldsymbol{\Sigma}\,\mathbf{w}$ es convexa.
+
+*Prueba (método del Hessiano).* El Hessiano de $f$ es $\nabla^2 f(\mathbf{w}) = 2\boldsymbol{\Sigma}$. Una función dos veces diferenciable es convexa si y solo si su Hessiano es semidefinido positivo en todo punto (Boyd §3.1.4). Como $\boldsymbol{\Sigma} \succeq 0$, se tiene $2\boldsymbol{\Sigma} \succeq 0$, luego $f$ es convexa. $\blacksquare$
+
+*Prueba (método directo).* Para $\mathbf{w}, \mathbf{v} \in \mathbb{R}^n$ y $\theta \in [0,1]$, se verifica expandiendo la forma cuadrática y usando la desigualdad $2\theta(1-\theta)\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{v} \leq \theta(1-\theta)(\mathbf{w}^\top\boldsymbol{\Sigma}\,\mathbf{w} + \mathbf{v}^\top\boldsymbol{\Sigma}\,\mathbf{v})$ (que sigue de $(\mathbf{w}-\mathbf{v})^\top\boldsymbol{\Sigma}(\mathbf{w}-\mathbf{v}) \geq 0$) que $f(\theta\mathbf{w}+(1-\theta)\mathbf{v}) \leq \theta f(\mathbf{w}) + (1-\theta)f(\mathbf{v})$. $\blacksquare$
+
+*Interpretación financiera*: la convexidad de $\sigma_p^2$ implica que el problema de minimización de riesgo de Markowitz no tiene mínimos locales espurios; todo mínimo local es global, lo que garantiza que los solvers siempre encuentren la solución óptima.
+
 ### Estimador muestral
 
 $$
@@ -132,7 +150,15 @@ $$
 \beta_i = \frac{\text{Cov}(r_i, r_m)}{\text{Var}(r_m)}
 $$
 
-La estimación de $\beta$ por regresión lineal es el problema de aproximación por mínimos cuadrados más básico: minimizar $\|A\mathbf{x} - \mathbf{b}\|_2^2$, un problema de optimización convexa (Boyd & Vandenberghe, 2004, §6.1).
+La estimación de $\beta$ por regresión lineal es el problema de aproximación por mínimos cuadrados más básico (Boyd & Vandenberghe, 2004, §6.1):
+
+$$
+\min_{\mathbf{x}} \; \|A\mathbf{x} - \mathbf{b}\|_2^2
+$$
+
+**Proposición (Mínimos cuadrados como optimización convexa, Boyd §6.1).** El problema de mínimos cuadrados es un problema de optimización convexa sin restricciones. La función objetivo $g(\mathbf{x}) = \|A\mathbf{x} - \mathbf{b}\|_2^2 = \mathbf{x}^\top A^\top A \, \mathbf{x} - 2\mathbf{b}^\top A \, \mathbf{x} + \mathbf{b}^\top\mathbf{b}$ es convexa porque su Hessiano $\nabla^2 g = 2A^\top A \succeq 0$ (toda matriz de la forma $A^\top A$ es SDP). La condición de primer orden $\nabla g = 2A^\top A\mathbf{x} - 2A^\top\mathbf{b} = \mathbf{0}$ produce las **ecuaciones normales** $A^\top A\,\mathbf{x} = A^\top\mathbf{b}$, cuya solución es $\hat{\mathbf{x}} = (A^\top A)^{-1}A^\top\mathbf{b}$ cuando $A$ tiene rango completo.
+
+*Interpretación financiera*: al estimar $\beta_i$ por OLS, estamos resolviendo un problema convexo que siempre tiene solución global. Esto garantiza que la descomposición del riesgo en sistemático ($\beta$) e idiosincrático ($\varepsilon$) es única y óptima en el sentido de mínima varianza.
 
 ### Interpretación
 
