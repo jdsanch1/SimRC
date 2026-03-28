@@ -15,59 +15,81 @@ Explorar extensiones del modelo de Markowitz: restricciones de tracking error, r
 
 ### Regularización L₂ — Tikhonov (Boyd & Vandenberghe, 2004, §6.3.2)
 
-**Definicion.** La regularización L₂ (ridge / Tikhonov) agrega un termino cuadratico de penalizacion a la funcion objetivo de Markowitz:
+La regularización L₂ (ridge / Tikhonov) agrega un término cuadrático de penalización al objetivo de Markowitz:
 
 $$
-\min_{\mathbf{w}} \; \mathbf{w}^\top \Sigma \mathbf{w} + \gamma \|\mathbf{w}\|_2^2 \quad \text{s.a.} \quad \boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+\min_{\mathbf{w}} \quad \mathbf{w}^\top \Sigma \mathbf{w} + \gamma \|\mathbf{w}\|_2^2
 $$
 
-donde $\gamma > 0$ es el hiperparametro de regularización. Esto equivale a resolver el QP con la matriz $\Sigma + \gamma I$ en lugar de $\Sigma$.
-
-*Bosquejo de prueba de convexidad.* $\|\mathbf{w}\|_2^2 = \mathbf{w}^\top I \mathbf{w}$ es convexa (pues $I \succ 0$). La suma de dos funciones convexas es convexa (Boyd & Vandenberghe, 2004, §3.2.1), asi que $\mathbf{w}^\top \Sigma \mathbf{w} + \gamma \mathbf{w}^\top I \mathbf{w} = \mathbf{w}^\top (\Sigma + \gamma I) \mathbf{w}$ es convexa. $\square$
-
-*Interpretacion financiera.* La operacion $\Sigma \to \Sigma + \gamma I$ tiene dos efectos criticos:
-
-1. **Mejora del condicionamiento:** Si $\Sigma$ tiene autovalores $\lambda_1 \geq \cdots \geq \lambda_n > 0$, el numero de condicion pasa de $\kappa(\Sigma) = \lambda_1/\lambda_n$ a $\kappa(\Sigma + \gamma I) = (\lambda_1 + \gamma)/(\lambda_n + \gamma)$, que es estrictamente menor. Esto reduce la sensibilidad de los pesos optimos a errores de estimacion en $\Sigma$.
-
-2. **Shrinkage hacia equi-ponderacion:** El termino $\gamma \|\mathbf{w}\|_2^2$ penaliza posiciones extremas, empujando la solucion hacia pesos mas uniformes — un efecto similar al estimador Ledoit-Wolf pero implementado via optimizacion.
-
-### Regularización L₁ — Sparsity (Boyd & Vandenberghe, 2004, §6.3.1)
-
-**Definicion.** La regularización L₁ (LASSO) promueve **esparcidad** en los pesos del portafolio:
+sujeto a:
 
 $$
-\min_{\mathbf{w}} \; \mathbf{w}^\top \Sigma \mathbf{w} + \gamma \|\mathbf{w}\|_1 \quad \text{s.a.} \quad \boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+\boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
 $$
 
-*Bosquejo de prueba de convexidad.* La norma $\|\mathbf{w}\|_1 = \sum_i |w_i|$ es convexa (como norma, satisface la desigualdad triangular y homogeneidad positiva; Boyd & Vandenberghe, 2004, §3.1.5). La suma ponderada con $\gamma > 0$ de dos funciones convexas es convexa. $\square$
+donde $\gamma > 0$ es el hiperparámetro de regularización. Esto equivale a resolver el QP con la matriz $\Sigma + \gamma I$ en lugar de $\Sigma$.
 
-*Nota importante sobre no-negatividad.* Cuando ya existe la restriccion $\mathbf{w} \geq 0$, se tiene $\|\mathbf{w}\|_1 = \sum_i w_i = \mathbf{1}^\top \mathbf{w} = 1$ (por la restriccion de presupuesto). En este caso, L₁ es **redundante** — todos los portafolios factibles tienen la misma norma L₁. Para que L₁ sea efectiva, se necesita permitir posiciones cortas ($w_i < 0$) o relajar la restriccion de presupuesto. Alternativamente, se puede usar L₁ sobre las desviaciones $\|w - w_{\text{ref}}\|_1$ respecto a un benchmark.
+**Convexidad.** La norma al cuadrado $\|\mathbf{w}\|_2^2 = \mathbf{w}^\top I \, \mathbf{w}$ es convexa (pues $I \succ 0$). La suma de dos funciones convexas es convexa (Boyd §3.2.1), así que $\mathbf{w}^\top(\Sigma + \gamma I)\mathbf{w}$ es convexa. ∎
+
+**Interpretación financiera:**
+
+1. **Mejora del condicionamiento.** Si $\Sigma$ tiene autovalores $\lambda_1 \geq \cdots \geq \lambda_n > 0$, el número de condición pasa de $\kappa(\Sigma) = \lambda_1/\lambda_n$ a $\kappa(\Sigma + \gamma I) = (\lambda_1 + \gamma)/(\lambda_n + \gamma)$, que es estrictamente menor. Esto reduce la sensibilidad de los pesos óptimos a errores de estimación.
+
+2. **Shrinkage hacia equi-ponderación.** El término $\gamma \|\mathbf{w}\|_2^2$ penaliza posiciones extremas, empujando la solución hacia pesos más uniformes — un efecto similar al estimador Ledoit-Wolf pero implementado vía optimización.
+
+### Regularización L₁ — Esparcidad (Boyd & Vandenberghe, 2004, §6.3.1)
+
+La regularización L₁ (LASSO) promueve **esparcidad** en los pesos del portafolio:
+
+$$
+\min_{\mathbf{w}} \quad \mathbf{w}^\top \Sigma \mathbf{w} + \gamma \|\mathbf{w}\|_1
+$$
+
+sujeto a:
+
+$$
+\boldsymbol{\mu}^\top \mathbf{w} \geq \mu^*, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
+$$
+
+**Convexidad.** La norma $\|\mathbf{w}\|_1 = \sum_i |w_i|$ es convexa (toda norma es convexa, Boyd §3.1.5). La suma ponderada con $\gamma > 0$ de dos funciones convexas es convexa. ∎
+
+**Nota sobre no-negatividad.** Cuando ya existe la restricción $w_i \geq 0$, se tiene $\|\mathbf{w}\|_1 = \sum_i w_i = 1$ (por la restricción de presupuesto). En este caso, L₁ es **redundante** — todos los portafolios factibles tienen la misma norma L₁. Para que L₁ sea efectiva, se necesita permitir posiciones cortas o usar L₁ sobre las desviaciones respecto a un benchmark.
 
 ### Tracking error como SOCP (Boyd & Vandenberghe, 2004, §4.3.1)
 
-**Definicion.** Una restriccion de tracking error limita la desviacion del portafolio respecto a un benchmark $\mathbf{b}$. Se formula como una **restriccion de cono de segundo orden** (SOC):
+Una restricción de tracking error limita la desviación del portafolio respecto a un benchmark $\mathbf{b}$. Se formula como una restricción de cono de segundo orden (SOC):
 
 $$
-\| \Sigma^{1/2} (\mathbf{w} - \mathbf{b}) \|_2 \leq \mathrm{TE}_{\max}
+\left\| \Sigma^{1/2} (\mathbf{w} - \mathbf{b}) \right\|_2 \leq \tau
 $$
 
-que es equivalente a la restriccion cuadratica $(\mathbf{w} - \mathbf{b})^\top \Sigma (\mathbf{w} - \mathbf{b}) \leq \mathrm{TE}_{\max}^2$. El problema completo:
+que es equivalente a la restricción cuadrática:
 
 $$
-\min_{\mathbf{w}} \; \mathbf{w}^\top \Sigma \mathbf{w} \quad \text{s.a.} \quad \| \Sigma^{1/2} (\mathbf{w} - \mathbf{b}) \|_2 \leq \mathrm{TE}_{\max}, \; \mathbf{1}^\top \mathbf{w} = 1, \; \mathbf{w} \geq 0
+(\mathbf{w} - \mathbf{b})^\top \Sigma (\mathbf{w} - \mathbf{b}) \leq \tau^2
 $$
 
-es un **SOCP** (Second-Order Cone Program), una subclase de los problemas convexos que se resuelve en tiempo polinomial.
+El problema completo es un **SOCP** (Second-Order Cone Program):
 
-*Bosquejo de prueba.* Un cono de segundo orden $\mathcal{K} = \{(x,t) : \|x\|_2 \leq t\}$ es un conjunto convexo (por la desigualdad triangular de la norma). La preimagen de un conjunto convexo bajo una transformacion afin ($\mathbf{w} \mapsto (\Sigma^{1/2}(\mathbf{w}-\mathbf{b}), \mathrm{TE}_{\max})$) es convexa (Boyd & Vandenberghe, 2004, §2.3.2). Como la interseccion con las restricciones lineales es convexa, el SOCP completo es convexo. $\square$
+$$
+\min_{\mathbf{w}} \quad \mathbf{w}^\top \Sigma \mathbf{w}
+$$
 
-*Interpretacion financiera.* La formulacion SOCP es preferible a la QCQP equivalente porque los solvers SOCP (ECOS, MOSEK) explotan la estructura conica para mayor eficiencia numerica. Ademas, permite agregar multiples restricciones de tracking error simultaneamente (por ejemplo, contra diferentes benchmarks sectoriales).
+sujeto a:
+
+$$
+\left\| \Sigma^{1/2}(\mathbf{w} - \mathbf{b}) \right\|_2 \leq \tau, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
+$$
+
+**Convexidad.** El cono de segundo orden $\mathcal{K} = \{(x,t) : \|x\|_2 \leq t\}$ es un conjunto convexo (por la desigualdad triangular). La preimagen de un conjunto convexo bajo una transformación afín es convexa (Boyd §2.3.2). La intersección con las restricciones lineales preserva la convexidad. ∎
+
+**Interpretación financiera.** La formulación SOCP es preferible a la QCQP equivalente porque los solvers SOCP (ECOS, MOSEK) explotan la estructura cónica para mayor eficiencia numérica. Además, permite agregar múltiples restricciones de tracking error simultáneamente (por ejemplo, contra diferentes benchmarks sectoriales).
 
 ---
 
 ## Estrategias de opciones
 
-Además de la optimización de portafolios, esta clase cubre **estrategias combinadas** de opciones (Hull, 2018, Cap. 12):
+Esta clase también cubre **estrategias combinadas** de opciones (Hull, 2018, Cap. 12):
 
 | Estrategia | Composición | Visión del mercado | Ganancia máx. | Pérdida máx. |
 |-----------|-------------|-------------------|:---:|:---:|
@@ -79,7 +101,7 @@ Además de la optimización de portafolios, esta clase cubre **estrategias combi
 
 ### Convexidad de los payoffs de estrategias
 
-La convexidad/concavidad del payoff de una estrategia determina si se puede optimizar con herramientas convexas (Boyd & Vandenberghe, 2004, §3.2.3):
+La convexidad del payoff determina si se puede optimizar con herramientas convexas (Boyd §3.2.3):
 
 - **Long call/put**: payoff convexo (max(x,0) es convexa)
 - **Straddle**: payoff convexo (suma de convexas)
@@ -113,8 +135,9 @@ La convexidad/concavidad del payoff de una estrategia determina si se puede opti
 ### Textos principales
 
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3.1 (SOCP, tracking error), §4.6 (QCQP), §6.3.1–6.3.2 (regularización L₁ y Tikhonov).
-- **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
+- **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 12: Trading Strategies Involving Options.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
+- **Michaud, R. O.** (1989). The Markowitz Optimization Enigma. *Financial Analysts Journal*, 45(1), 31–42.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning.
 
 ---
