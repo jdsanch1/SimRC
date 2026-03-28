@@ -7,60 +7,99 @@
 
 ## Objetivo
 
-Introducir las **opciones barrera** (path-dependent) y su valuación por simulación Monte Carlo. A diferencia de las opciones europeas (Clase 3 y 8), el payoff depende de toda la trayectoria del precio, no solo del valor final.
+Introducir las **opciones barrera** como derivados path-dependent y valuarlas por simulación Monte Carlo. A diferencia de las opciones europeas (Clases 3 y 8), el payoff depende de **toda la trayectoria** del precio, no solo del valor final.
 
 ---
 
 ## Contenido teórico
 
+### Opciones path-dependent
+
+Las opciones europeas estándar solo dependen de S_T (precio al vencimiento). Las opciones barrera dependen de toda la trayectoria, lo que las hace **path-dependent** y más difíciles de valuar.
+
 ### Tipos de opciones barrera
 
-| Tipo | Activación | Efecto |
-|------|-----------|--------|
-| **Knock-in** | Precio toca la barrera | La opción se **activa** |
-| **Knock-out** | Precio toca la barrera | La opción se **desactiva** |
-| **Up** | Barrera por encima del spot | Monitorea subidas |
-| **Down** | Barrera por debajo del spot | Monitorea caídas |
+| Tipo | Barrera vs. Spot | Se activa cuando | Efecto |
+|------|:---:|---|---|
+| **Down-and-out** | B < S₀ | min(S_t) ≤ B | Opción se **desactiva** (knockout) |
+| **Down-and-in** | B < S₀ | min(S_t) ≤ B | Opción se **activa** (knockin) |
+| **Up-and-out** | B > S₀ | max(S_t) ≥ B | Opción se **desactiva** |
+| **Up-and-in** | B > S₀ | max(S_t) ≥ B | Opción se **activa** |
+
+### Payoff formal
+
+**Down-and-out call:**
+
+$$
+V_T = \max(S_T - K, 0) \cdot \mathbf{1}\!\left\{\min_{0 \leq t \leq T} S_t > B\right\}
+$$
+
+**Down-and-in call:**
+
+$$
+V_T = \max(S_T - K, 0) \cdot \mathbf{1}\!\left\{\min_{0 \leq t \leq T} S_t \leq B\right\}
+$$
+
+### Relación in + out = europeo
+
+Para cada par (in, out) con la misma barrera, strike y vencimiento:
+
+$$
+V_{\text{in}} + V_{\text{out}} = V_{\text{europeo}}
+$$
+
+En toda trayectoria, exactamente una de las dos opciones está activa. Esto permite verificar numéricamente la implementación.
 
 ### Valuación por Monte Carlo
 
-Las opciones barrera no tienen solución analítica simple (a diferencia de Black-Scholes para europeas). La simulación Monte Carlo es el método estándar:
+Las opciones barrera no tienen solución analítica simple. El método estándar es:
 
-1. Generar N trayectorias completas del precio
+1. Generar N trayectorias completas del precio bajo medida risk-neutral
 2. Para cada trayectoria, verificar si la barrera fue tocada
-3. Calcular el payoff condicional
+3. Calcular el payoff condicional (payoff × indicadora)
 4. Promediar y descontar
 
-#### Operaciones que preservan convexidad y sus limites (Boyd & Vandenberghe, 2004, §3.2)
+### Ruptura de convexidad (Boyd & Vandenberghe, 2004, §3.2)
 
-La valuacion de opciones involucra composiciones de funciones. El siguiente cuadro resume las operaciones que preservan (o rompen) la convexidad, con ejemplos financieros:
+La función indicadora que determina si la barrera fue tocada **no es convexa**. Esto tiene consecuencias importantes:
 
-| Operacion | Preserva convexidad? | Ejemplo financiero |
-|-----------|---------------------|-------------------|
-| $\max(f(x), 0)$ con $f$ convexa | Si (Boyd §3.2.3) | Payoff de call europeo: $\max(S_T - K, 0)$ |
-| Suma ponderada positiva (αᵢ ≥ 0) | Sí (Boyd §3.2.1) | Portafolio de calls: $\sum n_i \max(S_T - K_i, 0)$ |
-| Composicion $h(g(x))$ con $h$ convexa no-decreciente, $g$ convexa | Si (Boyd §3.2.4) | $\exp(\mathbf{w}^\top \Sigma \mathbf{w})$: riesgo exponencial |
-| Supremo $\sup_\alpha f(x, \alpha)$ | Si (Boyd §3.2.3) | Worst-case loss: $\max_i \text{Loss}_i(\mathbf{w})$ |
-| Producto con función indicadora | **No en general** | Payoff de opcion barrera: $\max(S_T-K,0) \cdot \mathbf{1}_{\{\max_t S_t > B\}}$ |
-| Minimo $\min(f(x), g(x))$ | **No** (pero el maximo si) | Cap + floor combinado |
+**Operaciones que preservan convexidad (Boyd §3.2.3):**
+- max(f, g) con f, g convexas → Convexa (payoff de call/put)
+- Suma ponderada positiva → Convexa (portafolio de opciones long)
+- Composición con función convexa no decreciente → Convexa
 
-**Resultado clave: la funcion indicadora de barrera rompe la convexidad.** El payoff de una opcion knock-in es:
+**Operación que rompe convexidad:**
+- Producto con función indicadora → **No necesariamente convexa** (payoff de opciones barrera)
 
-$$
-V = e^{-rT} \max(S_T - K, 0) \cdot \mathbf{1}\left\{\max_{0 \leq t \leq T} S_t \geq B\right\}
-$$
+Esto explica por qué las opciones barrera no se pueden optimizar con CVXPY y requieren Monte Carlo.
 
-Aunque $\max(S_T - K, 0)$ es convexa en $S_T$, el producto con la indicadora $\mathbf{1}\{\max_t S_t \geq B\}$ no preserva convexidad porque la indicadora es discontinua y no es convexa ni concava (Boyd & Vandenberghe, 2004, §3.2). Esto explica por que la optimizacion de portafolios de opciones barrera **no se puede resolver con solvers convexos** y requiere simulacion Monte Carlo.
+### Efecto de la barrera en el precio
 
-#### Calibracion como aproximacion convexa (Boyd & Vandenberghe, 2004, §6.1)
+- Opciones **out** son siempre **más baratas** que las europeas (V_out ≤ V_europeo)
+- Cuando B → 0 (down) o B → ∞ (up), la barrera nunca se toca y V_out → V_europeo
+- Cuando B → S₀, casi todas las trayectorias tocan la barrera y V_out → 0
+- Opciones barrera son populares porque ofrecen protección similar a menor costo
 
-Aunque la valuacion directa de derivados exoticos no es convexa, la **calibracion de modelos** si puede formularse como un problema de optimizacion convexa. Dado un conjunto de precios de mercado $\{V_i^{\text{mkt}}\}$ y un modelo parametrico $V_i(\boldsymbol{\theta})$, la calibracion por minimos cuadrados:
+---
 
-$$
-\min_{\boldsymbol{\theta}} \; \sum_{i=1}^{m} \left( V_i(\boldsymbol{\theta}) - V_i^{\text{mkt}} \right)^2
-$$
+## Recursos adicionales
 
-es convexa cuando $V_i(\boldsymbol{\theta})$ es afin en $\boldsymbol{\theta}$ (como en el caso de interpolacion de superficies de volatilidad implicita con funciones base lineales). Para modelos no lineales (Heston, SABR), se usan **aproximaciones convexas** locales (linearizacion de Taylor) dentro de algoritmos iterativos tipo Gauss-Newton (Boyd & Vandenberghe, 2004, §6.1.1). Cada paso del algoritmo resuelve un subproblema de minimos cuadrados convexo, garantizando convergencia local.
+### Documentación
+
+| Recurso | Descripción |
+|---------|-------------|
+| [numpy.random.randn](https://numpy.org/doc/stable/reference/random/generated/numpy.random.randn.html) | Generación de normales estándar |
+| [numpy cumsum/min/max](https://numpy.org/doc/stable/reference/routines.math.html) | Operaciones a lo largo de trayectorias |
+
+### Conexión con otras clases
+
+| Clase | Relación |
+|-------|----------|
+| **Clase 3** | Opciones europeas (payoff, P&L, Black-Scholes) |
+| **Clase 7** | Simulación MC de precios (3 modelos) |
+| **Clase 8** | Valuación MC de opciones europeas |
+| **Clase 12** | Estrategias de opciones (spreads, straddle) |
+| **Clase 15** | Programación estocástica (optimización bajo incertidumbre) |
 
 ---
 
@@ -68,17 +107,23 @@ es convexa cuando $V_i(\boldsymbol{\theta})$ es afin en $\boldsymbol{\theta}$ (c
 
 ### Textos principales
 
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §3.2 (operaciones que preservan convexidad), §6.1–6.2 (aproximación y calibración).
-- **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 26: Exotic Options.
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §3.2 (preservación de convexidad).
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer. — Cap. 6: Barrier options.
+- **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 26: Exotic Options.
+- **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning. — Cap. 8: Opciones exóticas.
+
+### Artículos seminales
+
+- **Merton, R. C.** (1973). Theory of Rational Option Pricing. *The Bell Journal of Economics*, 4(1), 141–183.
+- **Rubinstein, M. & Reiner, E.** (1991). Breaking Down the Barriers. *Risk*, 4(8), 28–35.
 
 ---
 
 ## Navegación del curso
 
-← **Anterior**: Clase 13: Portafolio con bono
-→ **Siguiente**: Clase 15: Programación estocástica
+← **Anterior**: Clase 13: Portafolio con bono (MC vs Markowitz)
+→ **Siguiente**: Clase 15: Programación estocástica con Pyomo y CVXPY
 
 ---
 
