@@ -21,7 +21,7 @@ $$
 \mu_p = r_f + \frac{\mu_T - r_f}{\sigma_T} \cdot \sigma_p
 $$
 
-donde T es el portafolio tangente (máximo Sharpe). La pendiente es el ratio de Sharpe del portafolio tangente.
+donde T es el portafolio tangente (máximo Sharpe). La pendiente es el ratio de Sharpe del portafolio tangente. Con el activo libre de riesgo, parte del problema se linealiza (Boyd & Vandenberghe, 2004, §4.3). El **multiplicador de Lagrange** asociado a la restricción $\sum w_i = 1$ tiene interpretación como precio sombra del capital (Boyd & Vandenberghe, 2004, §5.1–5.2, §5.6): indica cuánto rendimiento adicional se obtiene por unidad de relajación de la restricción.
 
 ### Extensión de la covarianza
 
@@ -31,18 +31,9 @@ La matriz de covarianza se extiende con una fila/columna de ceros para el bono (
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
+### Textos principales
 
-- **§4.3 Programación lineal** (pp. 146–150): Con un activo libre de riesgo, parte del problema se linealiza. La CML es la solución de un problema de optimización donde el rendimiento es lineal en la asignación al bono.
-
-- **§5.1–5.2 Lagrangiano y dualidad** (pp. 215–233): El **multiplicador de Lagrange** asociado a la restricción Σwᵢ = 1 tiene interpretación económica: es el **precio sombra** del capital. La dualidad de Boyd formaliza cómo relajar restricciones afecta al valor óptimo.
-  - Lagrangiano: L(w, λ, ν) = w'Σw - λ'w - ν(1'w - 1)
-  - La variable dual ν* corresponde al costo de oportunidad del capital
-
-- **§5.6 Precios sombra** (pp. 267–270): Boyd muestra que el multiplicador óptimo λ* indica cuánto cambia la función objetivo por unidad de relajación de la restricción. En finanzas, esto es el valor marginal de agregar capital o activos.
-
-### Otros textos
-
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3 (programación lineal), §5.1–5.2, §5.6 (dualidad y precios sombra).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6: Mean-Variance Portfolio Theory.
 - **Sharpe, W. F.** (1964). Capital Asset Prices. *The Journal of Finance*, 19(3), 425–442.

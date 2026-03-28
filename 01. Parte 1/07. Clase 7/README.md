@@ -63,6 +63,8 @@ $$
 \text{CVaR}_\alpha = -\mathbb{E}[\text{PnL} \mid \text{PnL} \leq -\text{VaR}_\alpha]
 $$
 
+Minimizar el CVaR de un portafolio se puede formular como un problema de programación cónica de segundo orden (SOCP), lo que lo hace tratable mediante optimización convexa (Boyd & Vandenberghe, 2004, §4.3.2; Rockafellar & Uryasev, 2000).
+
 ### Propiedades
 
 | Propiedad | VaR | CVaR |
@@ -78,7 +80,7 @@ $$
 
 | Método | Descripción |
 |--------|-------------|
-| **Paramétrico** | Asume normalidad: VaR = μ - z_α · σ |
+| **Paramétrico** | Asume normalidad: VaR = μ - z_α · σ (cotas de Chebyshev permiten relajar este supuesto; Boyd & Vandenberghe, 2004, §6.2) |
 | **Histórico** | Percentil de los rendimientos observados |
 | **Monte Carlo** | Percentil de las simulaciones (usado en esta clase) |
 
@@ -115,18 +117,9 @@ El CVaR satisface los cuatro axiomas. El VaR falla en subaditividad para distrib
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-- **§4.3.2 SOCP y CVaR** (pp. 156–158): El **CVaR** (Expected Shortfall) se puede formular como un problema de programación cónica de segundo orden (SOCP). Rockafellar & Uryasev (2000) mostraron que minimizar CVaR es un problema convexo, y Boyd lo incluye como ejemplo de SOCP:
-  - min_w CVaR_α(w'r) s.a. Σwᵢ = 1, w ≥ 0
-  - Esta formulación es más restrictiva que minimizar varianza pero produce portafolios más robustos en las colas
-
-- **§6.2 Aproximación de Chebyshev** (pp. 301–303): Las **cotas de Chebyshev** proporcionan límites superiores para el VaR sin asumir normalidad: P(|X - μ| ≥ kσ) ≤ 1/k². Boyd las conecta con problemas de minimax convexos.
-
-- **§7.3 Detección y estimación** (pp. 364–380): Las pruebas de normalidad (Jarque-Bera, QQ-plots) usadas en esta clase se relacionan con la estimación ML de Boyd: si el modelo es correcto, los residuos deben ser normales.
-
 ### Textos principales
 
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §4.3.2 (SOCP y CVaR), §6.2 (cotas de Chebyshev para VaR).
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer. — Cap. 1–3.
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 22: Value at Risk.
 - **McNeil, A. J., Frey, R. & Embrechts, P.** (2015). *Quantitative Risk Management* (2nd ed.). Princeton University Press. — Cap. 2: Basic Concepts in Risk Management.

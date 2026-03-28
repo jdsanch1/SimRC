@@ -81,7 +81,7 @@ $$
 \boldsymbol{\mu}^\top \mathbf{w} = \mu^*, \qquad \sum_i w_i = 1, \qquad w_i \geq 0
 $$
 
-Este es un **problema cuadrático convexo** (QP): objetivo cuadrático convexo con restricciones lineales (Boyd & Vandenberghe, 2004, §4.4). Boyd demuestra que este problema tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$.
+Este es un **problema cuadrático convexo** (QP): objetivo cuadrático convexo con restricciones lineales (Boyd & Vandenberghe, 2004, §4.4), que tiene solución global única cuando $\boldsymbol{\Sigma} \succ 0$. La frontera resultante es una curva paramétrica cuya función de valor óptimo $p^*(\mu^*)$ es convexa (Boyd & Vandenberghe, 2004, §4.7.3), lo que garantiza suavidad y continuidad.
 
 ### Portafolio de mínima varianza (MVP)
 
@@ -97,7 +97,7 @@ $$
 
 ### Programación Convexa Disciplinada
 
-CVXPY utiliza el paradigma **DCP** (Disciplined Convex Programming) para verificar automáticamente la convexidad:
+CVXPY utiliza el paradigma **DCP** (Disciplined Convex Programming, Boyd & Vandenberghe, 2004, §4.2.3) para verificar automáticamente la convexidad:
 
 | Expresión CVXPY | Tipo DCP | Válida en |
 |---|---|---|
@@ -108,7 +108,7 @@ CVXPY utiliza el paradigma **DCP** (Disciplined Convex Programming) para verific
 
 ### Maximización del Sharpe (transformación)
 
-El ratio de Sharpe no es directamente convexo. Se usa la **transformación de Cornuejols y Tütüncü**:
+El ratio de Sharpe es una función **cuasi-convexa** — razón de una función afín y una convexa (Boyd & Vandenberghe, 2004, §4.3.2). Se usa la **transformación de Cornuejols y Tütüncü** para convertirlo en un QP estándar:
 
 Definir y = w / κ y resolver:
 
@@ -126,7 +126,7 @@ Luego los pesos óptimos son w* = y* / κ*.
 
 ### Frontera eficiente paramétrica
 
-Se usa `cp.Parameter()` con `warm_start=True` para resolver eficientemente múltiples QPs variando el rendimiento objetivo.
+Se usa `cp.Parameter()` con `warm_start=True` para resolver eficientemente múltiples QPs variando el rendimiento objetivo. El tradeoff rendimiento-riesgo es un problema bi-criterio cuya frontera eficiente coincide con el **conjunto de Pareto** (Boyd & Vandenberghe, 2004, §4.7.4).
 
 ---
 
@@ -146,29 +146,9 @@ El **dendrograma** muestra la estructura de similitud entre activos basada en la
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-Esta es una de las **clases centrales** para el contenido de Boyd. Los conceptos siguientes son directamente aplicados:
-
-- **§4.1–4.2 Problemas de optimización convexa** (pp. 127–145): Forma estándar: min f₀(x) s.a. fᵢ(x) ≤ 0, Ax = b. El problema de Markowitz es un caso particular con f₀ cuadrática convexa y restricciones lineales.
-
-- **§4.4 Programación cuadrática (QP)** (pp. 152–154): La frontera eficiente se obtiene resolviendo: min w'Σw s.a. μ'w = μ*, Σwᵢ = 1, w ≥ 0. Boyd demuestra que este problema tiene solución global única (por convexidad estricta cuando Σ ≻ 0).
-  - **Ejemplo 4.8** (p. 155): Portfolio optimization — ejemplo canónico de QP
-
-- **§4.7.3 Optimización paramétrica** (pp. 181–182): La frontera eficiente es una curva paramétrica donde μ* varía. Boyd muestra que la función de valor óptimo p*(μ*) es convexa, lo que garantiza que la frontera sea una curva suave.
-
-- **§4.2.3 Programación convexa disciplinada (DCP)**: Las reglas DCP de CVXPY implementan directamente el framework de Boyd: `cp.quad_form(w, Σ)` es convexa, `μ @ w` es afín, y las restricciones son lineales.
-
-- **§4.3.2 Programación lineal-fraccional** (pp. 145–146): El ratio de Sharpe S = (μ'w - r_f) / ||Σ^{1/2}w|| es una función **cuasi-convexa** (razón de funciones afín y convexa). Boyd muestra que maximizar funciones cuasi-convexas se puede reducir a una secuencia de problemas convexos. La transformación de Cornuejols & Tütüncü (usada en el notebook) convierte esto en un QP estándar.
-
-- **§4.7.4 Optimización multi-criterio** (pp. 178–181): El tradeoff rendimiento-riesgo es un problema **bi-criterio**. La frontera eficiente es el **conjunto de Pareto** (ver Figura 4.7, p. 175 — esencialmente una frontera de Markowitz). La ponderación λ·riesgo - rendimiento genera los distintos puntos de la frontera.
-
-> **Referencia clave**: Boyd, S. & Vandenberghe, L. (2004), Cap. 4, especialmente §4.4 y Ejemplo 4.8. El libro completo está disponible en [stanford.edu/~boyd/cvxbook](https://web.stanford.edu/~boyd/cvxbook/).
-
 ### Textos principales
 
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press.
-  - Cap. 4: Convex optimization problems.
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — Cap. 4 (§4.2.3 DCP, §4.3.2 funciones cuasi-convexas, §4.4 QP, §4.7.3–4.7.4 optimización paramétrica y multi-criterio).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
   - Cap. 22: Estimating Volatilities and Correlations.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.

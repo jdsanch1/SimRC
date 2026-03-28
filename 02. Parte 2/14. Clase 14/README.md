@@ -24,7 +24,7 @@ Introducir las **opciones barrera** (path-dependent) y su valuación por simulac
 
 ### Valuación por Monte Carlo
 
-Las opciones barrera no tienen solución analítica simple (a diferencia de Black-Scholes para europeas). La simulación Monte Carlo es el método estándar:
+Las opciones barrera no tienen solución analítica simple (a diferencia de Black-Scholes para europeas). Nótese que el payoff involucra composiciones de funciones (max, indicadoras); la composición $\max(f(x), 0)$ preserva la convexidad cuando $f$ es convexa (Boyd & Vandenberghe, 2004, §3.2), pero el producto con una indicadora de barrera puede romperla, lo que dificulta la optimización directa de portafolios de opciones barrera. La simulación Monte Carlo es el método estándar:
 
 1. Generar N trayectorias completas del precio
 2. Para cada trayectoria, verificar si la barrera fue tocada
@@ -35,16 +35,9 @@ Las opciones barrera no tienen solución analítica simple (a diferencia de Blac
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
+### Textos principales
 
-- **§3.2 Operaciones que preservan convexidad** (pp. 79–93): El payoff de opciones barrera involucra composiciones de funciones (max, indicadoras, producto). Boyd muestra cuándo estas composiciones preservan la convexidad:
-  - max(f(x), 0) es convexa si f es convexa
-  - f(x) · I(condición) puede no ser convexa — esto explica por qué la optimización de portafolios de opciones barrera es más difícil
-
-- **§6.1–6.2 Aproximación y ajuste** (pp. 291–303): La calibración de modelos para opciones barrera (ajustar parámetros del modelo a precios de mercado) es un problema de aproximación convexa cuando el modelo es lineal en los parámetros.
-
-### Otros textos
-
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §3.2 (operaciones que preservan convexidad), §6.1–6.2 (aproximación y calibración).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 26: Exotic Options.
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer. — Cap. 6: Barrier options.
 - **Venegas Martínez, F.** (2008). *Riesgos financieros y económicos* (2a ed.). Cengage Learning. — Cap. 8: Opciones exóticas.

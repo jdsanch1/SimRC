@@ -42,7 +42,7 @@ La optimización de Markowitz es extremadamente sensible a errores de estimació
 
 ### Idea fundamental
 
-Combinar la covarianza muestral (mucho ruido, poco sesgo) con una **matriz objetivo** más estable (poco ruido, más sesgo):
+Combinar la covarianza muestral (mucho ruido, poco sesgo) con una **matriz objetivo** más estable (poco ruido, más sesgo). Este promedio convexo es una forma de regularización (Boyd & Vandenberghe, 2004, §6.3–6.4) que mejora la estabilidad numérica:
 
 $$
 \hat{\boldsymbol{\Sigma}}_{\text{shrunk}} = (1 - \alpha) \, \hat{\boldsymbol{\Sigma}} + \alpha \, \mathbf{F}
@@ -73,7 +73,7 @@ Preserva las varianzas individuales pero elimina todas las covarianzas.
 
 ### Coeficiente óptimo de contracción
 
-Ledoit & Wolf (2004) derivan una fórmula analítica para el α óptimo que minimiza la pérdida cuadrática esperada:
+Ledoit & Wolf (2004) derivan una fórmula analítica para el α óptimo que minimiza la pérdida cuadrática esperada. Desde la perspectiva de estimación bayesiana, esto equivale a una estimación MAP con un prior que actúa como regularización (Boyd & Vandenberghe, 2004, §7.1–7.2):
 
 $$
 \alpha^* = \arg\min_\alpha \, \mathbb{E}\left[\left\| \hat{\boldsymbol{\Sigma}}_{\text{shrunk}}(\alpha) - \boldsymbol{\Sigma} \right\|_F^2\right]
@@ -152,21 +152,9 @@ Usa la distancia de correlación d = 1 - ρ para construir un dendrograma. Activ
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-- **§7.1–7.2 Estimación por máxima verosimilitud (ML) y MAP** (pp. 351–362): La estimación de la covarianza puede formularse como un problema de optimización convexa. La ML estima Σ maximizando la log-verosimilitud (convexa en Σ⁻¹), y la MAP agrega un prior que actúa como **regularización**.
-  - ML: max log det(Σ⁻¹) - tr(Σ⁻¹ S) → equivalente a la covarianza muestral
-  - MAP con prior: equivalente a shrinkage (Ledoit-Wolf)
-
-- **§6.3–6.4 Regularización** (pp. 305–311): El shrinkage de Ledoit-Wolf se interpreta como una regularización de tipo Tikhonov sobre la covarianza:
-  - Σ_shrunk = (1-α)Σ_sample + αF — es un promedio convexo (combinación convexa)
-  - Boyd muestra que la regularización mejora la estabilidad numérica (número de condición)
-
-- **§7.4 Diseño de experimentos** (pp. 385–393): Conexión conceptual: elegir qué activos observar para estimar mejor Σ es análogo al diseño óptimo de experimentos de Boyd.
-
 ### Textos principales
 
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press.
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §6.3–6.4 (regularización y shrinkage), §7.1–7.2 (estimación ML/MAP de covarianza).
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson. — Cap. 22.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6–8.
 - **Tsay, R. S.** (2010). *Analysis of Financial Time Series* (3rd ed.). Wiley.

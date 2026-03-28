@@ -294,7 +294,7 @@ donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vect
 ### Referencias técnicas
 
 - **Bollinger, J.** (2002). *Bollinger on Bollinger Bands*. McGraw-Hill.
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §2.1–2.2 (conjuntos convexos, simplex), §3.1.5 (formas cuadráticas), §A.1 (normas).
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §2.1–2.2 (conjuntos convexos), §3.1.5 (formas cuadráticas convexas).
 
 ---
 

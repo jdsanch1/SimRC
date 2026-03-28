@@ -13,11 +13,9 @@ Implementar la frontera eficiente completa usando funciones reutilizables (`port
 
 ## Contenido teórico
 
-### Esta es una de las clases centrales de Boyd en el curso.
-
 ### Programación cuadrática (QP) en detalle
 
-El problema de Markowitz en forma estándar QP (Boyd §4.4):
+El problema de Markowitz en forma estándar QP (Boyd & Vandenberghe, 2004, §4.4):
 
 $$
 \min_{\mathbf{w}} \quad \frac{1}{2} \mathbf{w}^\top P \mathbf{w} + q^\top \mathbf{w}
@@ -25,38 +23,15 @@ $$
 
 sujeto a: Gw ≤ h, Aw = b
 
-donde P = μ·Σ (Hessiana), q = -μ̄ (gradiente lineal), y las restricciones codifican Σwᵢ = 1 y w ≥ 0.
+donde P = μ·Σ (Hessiana), q = -μ̄ (gradiente lineal), y las restricciones codifican Σwᵢ = 1 y w ≥ 0. El QP tiene solución global única cuando P es definida positiva (Boyd & Vandenberghe, 2004, §4.4). La frontera eficiente se construye como una familia paramétrica de QPs (Boyd & Vandenberghe, 2004, §4.7.3), aprovechando `cp.Parameter()` con `warm_start=True`. Las condiciones KKT (Boyd & Vandenberghe, 2004, §5.5) caracterizan la optimalidad y explican por qué ciertos activos quedan fuera del portafolio óptimo: la complementariedad $w_i^* \cdot s_i = 0$ implica que un activo con peso cero tiene su condición marginal inactiva. Los multiplicadores duales del problema tienen interpretación financiera como precios de equilibrio (Boyd & Vandenberghe, 2004, §5.9). En la verificación DCP (Boyd & Vandenberghe, 2004, §3.2), `cp.quad_form(w, Σ)` es convexa porque $\Sigma \succeq 0$, y `mu_vec @ w` es afín.
 
 ---
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
+### Textos principales
 
-- **§4.4 Programación cuadrática** (pp. 152–154): Boyd formaliza el QP convexo y demuestra que tiene solución global única cuando P ≻ 0 (definida positiva). El problema de Markowitz satisface esta condición cuando Σ tiene rango completo.
-
-- **§4.7.3 Optimización paramétrica** (pp. 181–182): La frontera eficiente es un ejemplo de **familia paramétrica de problemas**: para cada valor de μ*, se resuelve un QP. Boyd demuestra que la función de valor óptimo p*(μ*) es convexa, lo que garantiza que la frontera es suave y continua.
-  - En CVXPY: `cp.Parameter()` con `warm_start=True` explota esta estructura
-
-- **§5.5 Condiciones KKT** (pp. 243–252): Las condiciones de Karush-Kuhn-Tucker caracterizan la optimalidad de los portafolios:
-  - Estacionariedad: 2Σw* - λ*μ - ν*1 = 0
-  - Factibilidad primal: Σw*ᵢ = 1, w* ≥ 0
-  - Complementariedad: w*ᵢ · sᵢ = 0 (si un activo tiene peso 0, su condición marginal no es activa)
-  - Las condiciones KKT explican **por qué** ciertos activos no entran en el portafolio óptimo
-
-- **§5.9 Dualidad y portafolios** (p. 280): El problema dual del QP de Markowitz tiene interpretación financiera: los multiplicadores duales representan los precios de equilibrio de los activos en el mercado.
-
-- **§11.8 Implementación** (pp. 509–513): CVXPY con solver ECOS usa un método primal-dual de punto interior (Boyd Cap. 11). La opción `warm_start=True` explota que problemas adyacentes en el barrido paramétrico tienen soluciones similares (§11.3.4, pp. 467–468).
-
-- **Verificación DCP** (reglas de composición, §3.2):
-  - `cp.quad_form(w, Σ)`: convexa porque Σ ⪰ 0 (§3.1.7, p. 71)
-  - `mu_vec @ w`: afín (§3.1, p. 67)
-  - `cp.sum(w) == 1`: restricción afín (§4.2.1)
-  - `w >= 0`: desigualdad afín (§4.2.1)
-
-### Otros textos
-
-- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — **Capítulos 4 y 5 completos**.
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — Cap. 3–5 (reglas DCP, QP, optimización paramétrica, dualidad, KKT), Cap. 11 (métodos de punto interior).
 - **Ledoit, O. & Wolf, M.** (2004). *Journal of Multivariate Analysis*, 88(2), 365–411.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press.
 - **Markowitz, H.** (1952). Portfolio Selection. *The Journal of Finance*, 7(1), 77–91.

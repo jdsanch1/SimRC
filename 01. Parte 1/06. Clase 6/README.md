@@ -41,7 +41,7 @@ El estimador de Huber ofrece un **compromiso** entre eficiencia bajo normalidad 
 
 ### Función de pérdida
 
-Huber (1964) propone una pérdida **híbrida**: cuadrática para residuos pequeños, lineal para grandes:
+Huber (1964) propone una pérdida **híbrida**: cuadrática para residuos pequeños, lineal para grandes. Boyd & Vandenberghe (2004, §6.1.2) la clasifican como función convexa y la implementan en CVXPY como `cp.huber(x, M)`:
 
 $$
 \rho_c(x) = \begin{cases} \frac{1}{2}x^2 & \text{si } |x| \leq c \\\\ c|x| - \frac{1}{2}c^2 & \text{si } |x| > c \end{cases}
@@ -57,7 +57,7 @@ $$
 \psi_c(x) = \begin{cases} x & \text{si } |x| \leq c \\\\ c \cdot \text{sign}(x) & \text{si } |x| > c \end{cases}
 $$
 
-La función de influencia está **acotada**: ninguna observación, por extrema que sea, puede tener una influencia mayor que c. En contraste, la media muestral tiene ψ(x) = x (influencia ilimitada).
+La función de influencia está **acotada**: ninguna observación, por extrema que sea, puede tener una influencia mayor que c. En contraste, la media muestral tiene ψ(x) = x (influencia ilimitada). El estimador de Huber se interpreta como un problema de regresión regularizado donde los residuos grandes se penalizan linealmente en vez de cuadráticamente, logrando el compromiso óptimo entre eficiencia (L₂) y robustez (L₁) (Boyd & Vandenberghe, 2004, §6.4).
 
 ### Parámetro de corte c
 
@@ -148,22 +148,9 @@ Los métodos de esta clase (LCG → Box-Muller → normales) son los **bloques f
 
 ## Referencias bibliográficas
 
-### Optimización convexa (Boyd & Vandenberghe, 2004)
-
-- **§6.1.2 Penalización de Huber** (pp. 298–300): Boyd define explícitamente la función de Huber como:
-  ```
-  φ_hub(u) = u² para |u| ≤ M,  M(2|u| - M) para |u| > M
-  ```
-  y la clasifica como función convexa (cuadrática + lineal). CVXPY implementa `cp.huber(x, M)` directamente.
-  - Boyd la compara con la pérdida cuadrática (L₂) y la pérdida absoluta (L₁)
-  - Es diferenciable en todo punto (a diferencia de L₁)
-
-- **§6.4 Regularización** (pp. 306–311): El estimador de Huber se interpreta como un problema de regresión regularizado donde los residuos grandes se penalizan linealmente en vez de cuadráticamente. Es el compromiso óptimo entre eficiencia (L₂) y robustez (L₁).
-
-- **§3.2.4 Log-sum-exp** (p. 93): Boyd presenta varias funciones convexas "robustas". La función de Huber pertenece a esta familia de funciones que moderan el efecto de valores extremos.
-
 ### Textos principales
 
+- **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — §6.1.2 (penalización de Huber), §6.4 (regularización).
 - **Huber, P. J. & Ronchetti, E. M.** (2009). *Robust Statistics* (2nd ed.). Wiley.
 - **Luenberger, D. G.** (2013). *Investment Science* (2nd ed.). Oxford University Press. — Cap. 6–8.
 - **Tsay, R. S.** (2010). *Analysis of Financial Time Series* (3rd ed.). Wiley.
