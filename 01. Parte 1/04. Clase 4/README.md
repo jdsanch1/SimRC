@@ -159,7 +159,11 @@ Esta es una de las **clases centrales** para el contenido de Boyd. Los conceptos
 
 - **§4.2.3 Programación convexa disciplinada (DCP)**: Las reglas DCP de CVXPY implementan directamente el framework de Boyd: `cp.quad_form(w, Σ)` es convexa, `μ @ w` es afín, y las restricciones son lineales.
 
-> **Referencia clave**: Boyd, S. & Vandenberghe, L. (2004), Cap. 4, especialmente §4.4 y Ejemplo 4.8.
+- **§4.3.2 Programación lineal-fraccional** (pp. 145–146): El ratio de Sharpe S = (μ'w - r_f) / ||Σ^{1/2}w|| es una función **cuasi-convexa** (razón de funciones afín y convexa). Boyd muestra que maximizar funciones cuasi-convexas se puede reducir a una secuencia de problemas convexos. La transformación de Cornuejols & Tütüncü (usada en el notebook) convierte esto en un QP estándar.
+
+- **§4.7.4 Optimización multi-criterio** (pp. 178–181): El tradeoff rendimiento-riesgo es un problema **bi-criterio**. La frontera eficiente es el **conjunto de Pareto** (ver Figura 4.7, p. 175 — esencialmente una frontera de Markowitz). La ponderación λ·riesgo - rendimiento genera los distintos puntos de la frontera.
+
+> **Referencia clave**: Boyd, S. & Vandenberghe, L. (2004), Cap. 4, especialmente §4.4 y Ejemplo 4.8. El libro completo está disponible en [stanford.edu/~boyd/cvxbook](https://web.stanford.edu/~boyd/cvxbook/).
 
 ### Textos principales
 

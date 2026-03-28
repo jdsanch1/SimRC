@@ -46,6 +46,14 @@ donde P = μ·Σ (Hessiana), q = -μ̄ (gradiente lineal), y las restricciones c
 
 - **§5.9 Dualidad y portafolios** (p. 280): El problema dual del QP de Markowitz tiene interpretación financiera: los multiplicadores duales representan los precios de equilibrio de los activos en el mercado.
 
+- **§11.8 Implementación** (pp. 509–513): CVXPY con solver ECOS usa un método primal-dual de punto interior (Boyd Cap. 11). La opción `warm_start=True` explota que problemas adyacentes en el barrido paramétrico tienen soluciones similares (§11.3.4, pp. 467–468).
+
+- **Verificación DCP** (reglas de composición, §3.2):
+  - `cp.quad_form(w, Σ)`: convexa porque Σ ⪰ 0 (§3.1.7, p. 71)
+  - `mu_vec @ w`: afín (§3.1, p. 67)
+  - `cp.sum(w) == 1`: restricción afín (§4.2.1)
+  - `w >= 0`: desigualdad afín (§4.2.1)
+
 ### Otros textos
 
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press. — **Capítulos 4 y 5 completos**.
