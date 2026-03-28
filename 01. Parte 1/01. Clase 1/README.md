@@ -266,6 +266,20 @@ donde $\boldsymbol{\Sigma}$ es la matriz de covarianza y $\mathbf{w}$ es el vect
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+Los siguientes conceptos del libro *Convex Optimization* se introducen en esta clase y se desarrollan progresivamente en el curso:
+
+- **§2.1–2.2 Conjuntos convexos** (pp. 21–36): El conjunto de portafolios factibles (pesos que suman 1, no negativos) forma un **simplex**, que es un conjunto convexo. Este concepto es fundamental para la optimización de portafolios.
+  - Un conjunto C es **convexo** si para todo x, y ∈ C y 0 ≤ θ ≤ 1: θx + (1-θ)y ∈ C
+  - El simplex estándar: Δ = {w ∈ ℝⁿ : Σwᵢ = 1, wᵢ ≥ 0}
+
+- **§A.1 Normas** (pp. 635–637): La desviación estándar σ es proporcional a la norma L₂ del vector de desviaciones. Las normas son funciones convexas, lo que garantiza que minimizar riesgo es un problema convexo.
+
+- **§3.1.5 Formas cuadráticas** (pp. 71–72): La varianza del portafolio σ²_p = w'Σw es una **forma cuadrática**. Si Σ es semidefinida positiva (PSD), esta forma es convexa — base de toda la optimización de portafolios.
+
+> **Nota**: El libro completo está disponible gratuitamente en [stanford.edu/~boyd/cvxbook](https://web.stanford.edu/~boyd/cvxbook/).
+
 ### Textos principales
 
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.

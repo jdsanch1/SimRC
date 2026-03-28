@@ -175,6 +175,17 @@ Estos problemas motivan los **estimadores robustos** que se estudiarán en las C
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+- **§2.4 Conos semidefinidos positivos** (p. 34): La matriz de covarianza Σ pertenece al cono de matrices semidefinidas positivas S⁺ₙ. Este cono es convexo y cerrado, lo que garantiza que las restricciones sobre Σ en optimización sean convexas.
+  - Σ ∈ S⁺ₙ ⟺ x'Σx ≥ 0 para todo x ∈ ℝⁿ ⟺ todos los eigenvalores son ≥ 0
+
+- **§3.1.5 Formas cuadráticas** (pp. 71–72): La función w'Σw es convexa cuando Σ ⪰ 0 (PSD). La convexidad de esta forma es lo que hace que la optimización media-varianza de Markowitz sea un problema de programación cuadrática convexa.
+
+- **§A.4 Matrices semidefinidas positivas** (pp. 642–643): Propiedades clave de las matrices PSD: factorización de Cholesky, relación con eigenvalores, y por qué la covarianza muestral puede no ser PSD con pocos datos (motivando los estimadores robustos de la Clase 5).
+
+- **§6.1 Aproximación por mínimos cuadrados** (pp. 291–295): La regresión lineal (usada para estimar beta) es el problema de optimización convexa más básico: minimizar ||Ax - b||²₂.
+
 ### Textos principales
 
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.

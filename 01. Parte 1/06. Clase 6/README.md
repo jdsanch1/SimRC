@@ -148,6 +148,20 @@ Los métodos de esta clase (LCG → Box-Muller → normales) son los **bloques f
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+- **§6.1.2 Penalización de Huber** (pp. 298–300): Boyd define explícitamente la función de Huber como:
+  ```
+  φ_hub(u) = u² para |u| ≤ M,  M(2|u| - M) para |u| > M
+  ```
+  y la clasifica como función convexa (cuadrática + lineal). CVXPY implementa `cp.huber(x, M)` directamente.
+  - Boyd la compara con la pérdida cuadrática (L₂) y la pérdida absoluta (L₁)
+  - Es diferenciable en todo punto (a diferencia de L₁)
+
+- **§6.4 Regularización** (pp. 306–311): El estimador de Huber se interpreta como un problema de regresión regularizado donde los residuos grandes se penalizan linealmente en vez de cuadráticamente. Es el compromiso óptimo entre eficiencia (L₂) y robustez (L₁).
+
+- **§3.2.4 Log-sum-exp** (p. 93): Boyd presenta varias funciones convexas "robustas". La función de Huber pertenece a esta familia de funciones que moderan el efecto de valores extremos.
+
 ### Textos principales
 
 - **Huber, P. J. & Ronchetti, E. M.** (2009). *Robust Statistics* (2nd ed.). Wiley.

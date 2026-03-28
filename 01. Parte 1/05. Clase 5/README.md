@@ -152,6 +152,18 @@ Usa la distancia de correlación d = 1 - ρ para construir un dendrograma. Activ
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+- **§7.1–7.2 Estimación por máxima verosimilitud (ML) y MAP** (pp. 351–362): La estimación de la covarianza puede formularse como un problema de optimización convexa. La ML estima Σ maximizando la log-verosimilitud (convexa en Σ⁻¹), y la MAP agrega un prior que actúa como **regularización**.
+  - ML: max log det(Σ⁻¹) - tr(Σ⁻¹ S) → equivalente a la covarianza muestral
+  - MAP con prior: equivalente a shrinkage (Ledoit-Wolf)
+
+- **§6.3–6.4 Regularización** (pp. 305–311): El shrinkage de Ledoit-Wolf se interpreta como una regularización de tipo Tikhonov sobre la covarianza:
+  - Σ_shrunk = (1-α)Σ_sample + αF — es un promedio convexo (combinación convexa)
+  - Boyd muestra que la regularización mejora la estabilidad numérica (número de condición)
+
+- **§7.4 Diseño de experimentos** (pp. 385–393): Conexión conceptual: elegir qué activos observar para estimar mejor Σ es análogo al diseño óptimo de experimentos de Boyd.
+
 ### Textos principales
 
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press.

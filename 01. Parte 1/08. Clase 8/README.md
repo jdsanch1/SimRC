@@ -146,6 +146,22 @@ Datos (yfinance)
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+- **§6.5 Aproximación multi-objetivo** (pp. 311–314): El tradeoff rendimiento-riesgo de Markowitz es un ejemplo canónico de optimización **bi-objetivo**: maximizar μ_p y minimizar σ_p simultáneamente. Boyd muestra que la frontera eficiente es la **frontera de Pareto** de este problema bi-objetivo.
+  - La ponderación λ·riesgo - rendimiento genera los distintos puntos de la frontera
+  - El ratio de Sharpe identifica el punto óptimo en esta frontera
+
+- **Consolidación**: Esta clase integra los conceptos de Boyd distribuidos en las Clases 1–7:
+  - §2.1–2.2: Conjuntos convexos (restricciones de portafolio)
+  - §3.1.5: Formas cuadráticas (varianza del portafolio)
+  - §4.4: QP (frontera eficiente)
+  - §6.1.2: Huber (estimación robusta)
+  - §6.3: Regularización (shrinkage)
+  - §4.3.2: SOCP (CVaR)
+
+> Para la **Parte 2**, se profundiza en: QP con restricciones adicionales (§4.4), dualidad (§5.1–5.5), KKT (§5.5), SOCP (§4.3), y métodos de punto interior (§11.1).
+
 ### Textos principales
 
 - **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer. — Cap. 1–4.

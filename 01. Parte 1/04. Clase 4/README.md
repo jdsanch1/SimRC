@@ -146,6 +146,21 @@ El **dendrograma** muestra la estructura de similitud entre activos basada en la
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+Esta es una de las **clases centrales** para el contenido de Boyd. Los conceptos siguientes son directamente aplicados:
+
+- **§4.1–4.2 Problemas de optimización convexa** (pp. 127–145): Forma estándar: min f₀(x) s.a. fᵢ(x) ≤ 0, Ax = b. El problema de Markowitz es un caso particular con f₀ cuadrática convexa y restricciones lineales.
+
+- **§4.4 Programación cuadrática (QP)** (pp. 152–154): La frontera eficiente se obtiene resolviendo: min w'Σw s.a. μ'w = μ*, Σwᵢ = 1, w ≥ 0. Boyd demuestra que este problema tiene solución global única (por convexidad estricta cuando Σ ≻ 0).
+  - **Ejemplo 4.8** (p. 155): Portfolio optimization — ejemplo canónico de QP
+
+- **§4.7.3 Optimización paramétrica** (pp. 181–182): La frontera eficiente es una curva paramétrica donde μ* varía. Boyd muestra que la función de valor óptimo p*(μ*) es convexa, lo que garantiza que la frontera sea una curva suave.
+
+- **§4.2.3 Programación convexa disciplinada (DCP)**: Las reglas DCP de CVXPY implementan directamente el framework de Boyd: `cp.quad_form(w, Σ)` es convexa, `μ @ w` es afín, y las restricciones son lineales.
+
+> **Referencia clave**: Boyd, S. & Vandenberghe, L. (2004), Cap. 4, especialmente §4.4 y Ejemplo 4.8.
+
 ### Textos principales
 
 - **Boyd, S. & Vandenberghe, L.** (2004). *Convex Optimization*. Cambridge University Press.

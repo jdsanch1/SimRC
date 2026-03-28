@@ -248,6 +248,16 @@ En estas fórmulas, φ denota la función de densidad de la normal estándar.
 
 ## Referencias bibliográficas
 
+### Optimización convexa (Boyd & Vandenberghe, 2004)
+
+- **§3.2.3 Funciones convexas — composición con max** (p. 87): El payoff de una opción max(S_T - K, 0) es una función **convexa** de S_T. La composición de funciones convexas preserva la convexidad bajo ciertas condiciones (Regla de composición, §3.2.4).
+  - max(x, 0) es convexa y no decreciente
+  - Esto es relevante para CVXPY: `cp.maximum(S - K, 0)` es DCP-convexo
+
+- **§6.1.2 Penalización de Huber** (p. 299): La función de Huber aparece como alternativa a los mínimos cuadrados para problemas de regresión robusta. En el contexto de opciones, se usa para calibración robusta de la volatilidad implícita.
+
+- **§4.3.2 SOCP** (pp. 156–158): La valoración de opciones por Monte Carlo y la optimización de portafolios con restricciones de riesgo se pueden formular como problemas SOCP (Second-Order Cone Programming), más generales que QP.
+
 ### Textos principales
 
 - **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives* (10th ed.). Pearson.
