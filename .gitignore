@@ -27,3 +27,6 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Datos externos grandes (base de datos de impacto de citas, Ioannidis et al.)
+Table_*_Authors_*.xlsx
